@@ -1,4 +1,7 @@
-#uncertaintyTCR.R
+# uncertaintyTCR.R
+# Uncertainty analysis of Transient Climate Response (TCR)
+# What is the probability distribution of CO2 concentration
+# at a particular temperature change, given a distribution of TCR?
 
 tfunc  = function(tcr, c0=280, dT=2, dF2co2=3.7){
   out = c0 * exp( (dT * dF2co2) / (5.35 * tcr))
