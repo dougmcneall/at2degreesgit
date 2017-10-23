@@ -39,7 +39,8 @@ text(0.8,500, "at 1.5 degrees", col = 'red')
 # Still to do: pick a closer mean/sd (perhaps non normal?)
 
 tcrmean = 1.75
-tcrsd = 0.5     # The final result is very sensitive to lower tail of tcr distribution
+#tcrsd = 0.5
+tcrsd = 0.45  # The final result is very sensitive to lower tail of tcr distribution
 
 # A plot of what the assumed tcr distribution looks like
 tcrdens = dnorm(tcr_range, mean = tcrmean, sd = tcrsd)
@@ -74,7 +75,7 @@ Mode(samp_1.5deg.trunc)
 Mode(samp_2deg.trunc)
 
 # Might do better with lower standard deviation
-tcrdens = dnorm(tcr_range, mean = 1.75, sd = 0.47)
+tcrdens = dnorm(tcr_range, mean = 1.75, sd = 0.45)
 sum(tcrdens)/dx
 sum((tcrdens/dx)[tcr_range<1])
 sum((tcrdens/dx)[tcr_range<2.5])
