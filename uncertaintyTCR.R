@@ -1,6 +1,5 @@
 #uncertaintyTCR.R
 
-
 tfunc  = function(tcr, c0=280, dT=2, dF2co2=3.7){
   out = c0 * exp( (dT * dF2co2) / (5.35 * tcr))
   out
