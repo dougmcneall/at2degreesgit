@@ -37,7 +37,6 @@ text(0.8,500, "at 1.5 degrees", col = 'red')
 # Very approximately, the TCR distribution is N(1.75, 0.5)
 # MC sample, and plug that into the transfer function
 # Still to do: pick a closer mean/sd (perhaps non normal?)
-
 tcrmean = 1.75
 #tcrsd = 0.5
 tcrsd = 0.45  # The final result is very sensitive to lower tail of tcr distribution
@@ -82,25 +81,6 @@ sum((tcrdens/dx)[tcr_range<2.5])
 
 
 
-
-
-
-
-
-# # looking for the probability density of C
-# 
-# plot(c_at_2deg , w*c_at_2deg, type = 'l')
-# lines(c_at_1.5deg , w*c_at_1.5deg, col = 'red')
-# 
-# 
-# tfuncprob  = function(tcr, c0=280, dT=2, dF2co2=3.7, w){
-#   
-#   out = c0 * exp( (dT * dF2co2) / (5.35 * tcr * w))
-#   out
-#   
-# }
-# 
-# pc_at_2deg =  tfuncprob(tcr = tcr_range, c0 = 280, dT = 2, dF2co2=3.7, w = w)
 
 
 
