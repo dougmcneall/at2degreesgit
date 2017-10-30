@@ -3,6 +3,9 @@
 # What is the probability distribution of CO2 concentration
 # at a particular temperature change, given a distribution of TCR?
 
+col2 = 'black'
+col1_5 = 'blue'
+
 tfunc  = function(tcr, c0=280, dT=2, dF2co2=3.44){
   # Transfer function that takes in TCR and outputs
   # a co2 concentration at a given temperature change
@@ -218,9 +221,9 @@ dev.off()
 
 
 # --------------------------------------------------------------------
-# Plot CO2 conc. when CMIP5 models cross warming thresholds
+# Plot CO2 concentration,
+# when CMIP5 models cross warming thresholds
 # --------------------------------------------------------------------
-
 
 modco2 = read.csv("CMIP5_CO2_warming_summary - Sheet1.csv")
 
@@ -250,9 +253,6 @@ points(RCP6_2deg$CO2_ppmv,rep(3, length(RCP6_2deg$CO2_ppmv)))
 points(RCP45_2deg$CO2_ppmv,rep(2, length(RCP45_2deg$CO2_ppmv)))
 points(RCP26_2deg$CO2_ppmv,rep(1, length(RCP26_2deg$CO2_ppmv)))
 
-col2 = 'black'
-col1_5 = 'blue'
-
 points(RCP85_1_5deg$CO2_ppmv,rep(3.7, length(RCP85_1_5deg$CO2_ppmv)), col = col1_5)
 
 points(RCP6_1_5deg$CO2_ppmv,rep(2.7, length(RCP6_1_5deg$CO2_ppmv)), col = col1_5)
@@ -268,6 +268,93 @@ legend('topright', legend = c('2 degrees', '1.5 degrees'),
        )
 dev.off()
 
+
+# --------------------------------------------------------------------
+# Combine model estimates and observational estimates of CO2
+# concentration at temperature thresholds with a rug plot
+# --------------------------------------------------------------------
+
+rpch = '|'
+xlim = c(300, 1100)
+ylim = c(0, 0.007)
+
+pdf(width = 7, height = 6, file = 'co2_dist_rug.pdf')
+
+nf <- layout(matrix(c(1,2,3,4),2,2,byrow = TRUE), widths= c(4,4), heights= c(4,2), TRUE)
+#layout.show(nf)
+par(mar = c(0,5,2,1), las = 1)
+hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30, 
+     xlim = xlim,
+     ylim = ylim,
+     col = ar5col,
+     main = "1.5 degrees",
+     xlab = expression(paste("CO"[2]," conc. (ppm)")),
+     ylab = "",
+     axes = FALSE)
+
+hist(R16_1.5deg.trunc, freq = FALSE,
+     breaks = 30, add = TRUE, col = R16col
+)
+
+#axis(2)
+par(mar = c(0,2,2,4), las = 1)
+hist(samp_2deg.trunc, freq = FALSE, breaks = 30, 
+     xlim = xlim,
+     ylim = ylim,
+     col = ar5col,
+     main = "2 degrees",
+     #xlab = expression(paste("CO"[2]," conc. (ppm)")),
+     ylab = '',
+     axes = FALSE
+)
+
+hist(R16_2deg.trunc, freq = FALSE,
+     breaks = 30, add = TRUE,col = R16col)
+legend('topright', legend = c('AR5', 'R16'), fill = c(ar5col, R16col), 
+       bty = 'n')
+
+par(mar = c(5,5,0,1), las = 1)
+plot(RCP85_1_5deg$CO2_ppmv,rep(4, length(RCP85_1_5deg$CO2_ppmv)), 
+     ylim = c(0,5),
+     xlim = xlim,
+     axes = FALSE,
+     xlab = expression(paste('CO'[2], ' conc. (ppm)')),
+     ylab = '',
+     col = col1_5,
+     pch = rpch)
+
+points(RCP6_1_5deg$CO2_ppmv,rep(3, length(RCP6_1_5deg$CO2_ppmv)),
+       col = col1_5,
+       pch = rpch)
+
+points(RCP45_1_5deg$CO2_ppmv,rep(2, length(RCP45_1_5deg$CO2_ppmv)), 
+       col = col1_5,
+       pch = rpch)
+
+points(RCP26_1_5deg$CO2_ppmv,rep(1, length(RCP26_1_5deg$CO2_ppmv)),
+       col = col1_5,
+       pch = rpch)
+axis(1)
+axis(2, labels = c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5'), at = 1:4)
+
+par(mar = c(5,2,0,4), las = 1)
+plot(RCP85_2deg$CO2_ppmv, rep(4, length(RCP85_2deg$CO2_ppmv)),
+     ylim = c(0,5),
+     xlim = xlim,
+     axes = FALSE,
+     xlab = expression(paste('CO'[2], ' conc. (ppm)')),
+     ylab = '',
+     pch = rpch
+)
+axis(1)
+points(RCP6_2deg$CO2_ppmv,rep(3, length(RCP6_2deg$CO2_ppmv)),
+       pch = rpch)
+points(RCP45_2deg$CO2_ppmv,rep(2, length(RCP45_2deg$CO2_ppmv)),
+       pch = rpch)
+points(RCP26_2deg$CO2_ppmv,rep(1, length(RCP26_2deg$CO2_ppmv)),
+       pch = rpch)
+
+dev.off()
 
 
 
