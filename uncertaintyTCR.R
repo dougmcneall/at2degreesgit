@@ -297,21 +297,21 @@ R16col = rgb(col2rgb('tomato2')[1]/256,
              col2rgb('tomato2')[3]/256,
              0.5)
 
-isicol = 'tomato2'
+isicol = 'dodgerblue'
 
-modlist = c('CMCC-CM', 'CCSM4', 'IPSL-CM5A-LR',
-            'GFDL-CM3', 'HadGEM2-ES', 'MIROC5', 'MRI-CGCM3')
+modlist = c('GFDL-ESM2M', 'NorESM1-M', 'MIROC-ESM-CHEM',
+            'HadGEM2-ES', 'MIROC5', 'IPSL-CM5A-LR')
 
-pdf(width = 7, height = 6, file = 'co2_dist_rug.pdf')
+pdf(width = 7, height = 5, file = 'co2_dist_rug.pdf')
 
 nf <- layout(matrix(c(1,2,3,4),2,2,byrow = TRUE), widths= c(4,4), heights= c(4,2), TRUE)
 #layout.show(nf)
-par(mar = c(0,5,2,1), las = 1, fg = 'white')
+par(mar = c(0,5,1,1), las = 1, fg = 'white')
 hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30, 
      xlim = xlim,
      ylim = ylim,
      col = ar5col,
-     main = "1.5 degrees",
+     main = "",
      xlab = expression(paste("CO"[2]," conc. (ppm)")),
      ylab = "Relative probability density",
      axes = FALSE)
@@ -320,14 +320,15 @@ hist(R16_1.5deg.trunc, freq = FALSE,
      breaks = 30, add = TRUE, col = R16col,
      fg = 'white'
 )
+mtext('1.5 degrees', side = 3, line = -2, font = 2, col = 'black')
 
 #axis(2)
-par(mar = c(0,2,2,4), las = 1)
+par(mar = c(0,2,1,4), las = 1)
 hist(samp_2deg.trunc, freq = FALSE, breaks = 30, 
      xlim = xlim,
      ylim = ylim,
      col = ar5col,
-     main = "2 degrees",
+     main = "",
      xlab = '',
      ylab = '',
      axes = FALSE
@@ -335,8 +336,10 @@ hist(samp_2deg.trunc, freq = FALSE, breaks = 30,
 
 hist(R16_2deg.trunc, freq = FALSE,
      breaks = 30, add = TRUE,col = R16col)
-legend('topright', legend = c('AR5', 'R16'), fill = c(ar5col, R16col), 
-       bty = 'n', text.col = 'black')
+legend('right', legend = c('AR5', 'R16'), fill = c(ar5col, R16col), 
+       bty = 'n', text.col = 'black', border = 'white')
+
+mtext('2 degrees', side = 3, line = -2, font = 2, col = 'black')
 
 par(mar = c(5,5,0,1), las = 1)
 plot(RCP85_1_5deg$CO2_ppmv,rep(4, length(RCP85_1_5deg$CO2_ppmv)), 
@@ -409,9 +412,36 @@ points(RCP45_2deg_isimip$CO2_ppmv,rep(2, length(RCP45_2deg_isimip$CO2_ppmv)),
 points(RCP26_2deg_isimip$CO2_ppmv,rep(1, length(RCP26_2deg_isimip$CO2_ppmv)),
        pch = rpch,col = isicol)
 
+legend('right', legend = c('AR5', 'AR5 & ISIMIP'), pch = rpch, 
+       col = c('black', isicol), text.col = 'black', cex = 0.8, bty = 'n')
+
 dev.off()
 
 
+print("RCP8.5 2 degrees")
+print(RCP85_2deg[order(RCP85_2deg$CO2_ppmv, decreasing = TRUE) , ])
+
+print("RCP6.0 2 degrees")
+print(RCP6_2deg[order(RCP6_2deg$CO2_ppmv, decreasing = TRUE) , ])
+
+print("RCP4.5 2 degrees")
+print(RCP45_2deg[order(RCP45_2deg$CO2_ppmv, decreasing = TRUE) , ])
+
+print("RCP2.6 2 degrees")
+print(RCP26_2deg[order(RCP26_2deg$CO2_ppmv, decreasing = TRUE) , ])
+
+
+print("RCP8.5 1.5 degrees")
+print(RCP85_1_5deg[order(RCP85_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
+
+print("RCP6.0 1.5 degrees")
+print(RCP6_1_5deg[order(RCP6_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
+
+print("RCP4.5 1.5 degrees")
+print(RCP45_1_5deg[order(RCP45_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
+
+print("RCP2.6.0 1.5 degrees")
+print(RCP26_1_5deg[order(RCP26_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
 
 
 
