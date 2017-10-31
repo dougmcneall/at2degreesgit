@@ -225,19 +225,31 @@ dev.off()
 # when CMIP5 models cross warming thresholds
 # --------------------------------------------------------------------
 
-modco2 = read.csv("CMIP5_CO2_warming_summary - Sheet1.csv")
+modco2 = read.csv("CMIP5_CO2_warming_summary - Sheet1.csv", sep = ',', strip.white = TRUE)
 
 RCP85_2deg = subset(modco2, RCP == "RCP85" & SWL == 2)
 RCP85_1_5deg = subset(modco2, RCP == "RCP85" & SWL == 1.5)
 
+RCP85_2deg_isimip = subset(RCP85_2deg, model%in% modlist)
+RCP85_1_5deg_isimip = subset(RCP85_1_5deg, model%in% modlist)
+
 RCP6_2deg = subset(modco2, RCP == "RCP6" & SWL == 2)
 RCP6_1_5deg = subset(modco2, RCP == "RCP6" & SWL == 1.5)
+
+RCP6_2deg_isimip = subset(RCP6_2deg, model%in% modlist)
+RCP6_1_5deg_isimip = subset(RCP6_1_5deg, model%in%modlist)
 
 RCP45_2deg = subset(modco2, RCP == "RCP45" & SWL == 2)
 RCP45_1_5deg = subset(modco2, RCP == "RCP45" & SWL == 1.5)
 
+RCP45_2deg_isimip = subset(RCP45_2deg, model%in%modlist)
+RCP45_1_5deg_isimip = subset(RCP45_1_5deg, model%in%modlist)
+
 RCP26_2deg = subset(modco2, RCP == "RCP26" & SWL == 2)
 RCP26_1_5deg = subset(modco2, RCP == "RCP26" & SWL == 1.5)
+
+RCP26_2deg_isimip = subset(RCP26_2deg, model%in%modlist)
+RCP26_1_5deg_isimip = subset(RCP26_1_5deg, model%in%modlist)
 
 pdf(width = 5, height = 5, file = 'modco2.pdf')
 par(las = 1, mar = c(5,6,3,2))
@@ -252,6 +264,7 @@ plot(RCP85_2deg$CO2_ppmv, rep(4, length(RCP85_2deg$CO2_ppmv)),
 points(RCP6_2deg$CO2_ppmv,rep(3, length(RCP6_2deg$CO2_ppmv)))
 points(RCP45_2deg$CO2_ppmv,rep(2, length(RCP45_2deg$CO2_ppmv)))
 points(RCP26_2deg$CO2_ppmv,rep(1, length(RCP26_2deg$CO2_ppmv)))
+
 
 points(RCP85_1_5deg$CO2_ppmv,rep(3.7, length(RCP85_1_5deg$CO2_ppmv)), col = col1_5)
 
@@ -283,6 +296,11 @@ R16col = rgb(col2rgb('tomato2')[1]/256,
              col2rgb('tomato2')[2]/256,
              col2rgb('tomato2')[3]/256,
              0.5)
+
+isicol = 'tomato2'
+
+modlist = c('CMCC-CM', 'CCSM4', 'IPSL-CM5A-LR',
+            'GFDL-CM3', 'HadGEM2-ES', 'MIROC5', 'MRI-CGCM3')
 
 pdf(width = 7, height = 6, file = 'co2_dist_rug.pdf')
 
@@ -341,6 +359,26 @@ points(RCP45_1_5deg$CO2_ppmv,rep(2, length(RCP45_1_5deg$CO2_ppmv)),
 points(RCP26_1_5deg$CO2_ppmv,rep(1, length(RCP26_1_5deg$CO2_ppmv)),
        col = 'black',
        pch = rpch)
+
+
+points(RCP85_1_5deg_isimip$CO2_ppmv,rep(4, length(RCP85_1_5deg_isimip$CO2_ppmv)),
+       col = isicol,
+       pch = rpch)
+
+points(RCP6_1_5deg_isimip$CO2_ppmv,rep(3, length(RCP6_1_5deg_isimip$CO2_ppmv)),
+       col = isicol,
+       pch = rpch)
+
+points(RCP45_1_5deg_isimip$CO2_ppmv,rep(2, length(RCP45_1_5deg_isimip$CO2_ppmv)), 
+       col = isicol,
+       pch = rpch)
+
+points(RCP26_1_5deg_isimip$CO2_ppmv,rep(1, length(RCP26_1_5deg_isimip$CO2_ppmv)),
+       col = isicol,
+       pch = rpch)
+
+
+
 axis(1, col = 'black')
 axis(2, labels = c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5'), at = 1:4, col = 'black')
 
@@ -362,10 +400,16 @@ points(RCP45_2deg$CO2_ppmv,rep(2, length(RCP45_2deg$CO2_ppmv)),
 points(RCP26_2deg$CO2_ppmv,rep(1, length(RCP26_2deg$CO2_ppmv)),
        pch = rpch,col = 'black')
 
+points(RCP85_2deg_isimip$CO2_ppmv,rep(4, length(RCP85_2deg_isimip$CO2_ppmv)),
+       pch = rpch,col = isicol)
+points(RCP6_2deg_isimip$CO2_ppmv,rep(3, length(RCP6_2deg_isimip$CO2_ppmv)),
+       pch = rpch,col = isicol)
+points(RCP45_2deg_isimip$CO2_ppmv,rep(2, length(RCP45_2deg_isimip$CO2_ppmv)),
+       pch = rpch,col = isicol)
+points(RCP26_2deg_isimip$CO2_ppmv,rep(1, length(RCP26_2deg_isimip$CO2_ppmv)),
+       pch = rpch,col = isicol)
+
 dev.off()
-
-
-
 
 
 
