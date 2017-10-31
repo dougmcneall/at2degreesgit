@@ -60,7 +60,7 @@ tcrsd = 0.45  # The final result is very sensitive to lower tail of tcr distribu
 
 # A plot of what the assumed tcr distribution looks like
 tcrdens = dnorm(tcr_range, mean = tcrmean, sd = tcrsd)
-plot(tcr_range, tcrdens, type = 'l', lwd = 2, main = "pr(TCR)", xlab = "TCR", ylab = "Probability density" )
+#plot(tcr_range, tcrdens, type = 'l', lwd = 2, main = "pr(TCR)", xlab = "TCR", ylab = "Probability density" )
 
 # Monte Carlo sample from the tcr distribution and push it through the 
 # transfer function
@@ -91,7 +91,7 @@ print(quantile(samp_1.5deg, probs = c(0.05, 0.5, 0.95)))
 # Might do better with lower standard deviation
 # tcrdens = dnorm(tcr_range, mean = 1.75, sd = 0.45)
 tcrdens = dlnorm(tcr_range, meanlog = log(1.9), sdlog =0.4)
-plot(tcr_range, tcrdens, type = 'l')
+#plot(tcr_range, tcrdens, type = 'l')
 sum(tcrdens)/dx
 sum((tcrdens/dx)[tcr_range<1])
 sum((tcrdens/dx)[tcr_range<3.3])
@@ -226,6 +226,8 @@ dev.off()
 # --------------------------------------------------------------------
 
 modco2 = read.csv("CMIP5_CO2_warming_summary - Sheet1.csv", sep = ',', strip.white = TRUE)
+modlist = c('GFDL-ESM2M', 'NorESM1-M', 'MIROC-ESM-CHEM',
+            'HadGEM2-ES', 'MIROC5', 'IPSL-CM5A-LR')
 
 RCP85_2deg = subset(modco2, RCP == "RCP85" & SWL == 2)
 RCP85_1_5deg = subset(modco2, RCP == "RCP85" & SWL == 1.5)
@@ -286,6 +288,72 @@ dev.off()
 # Combine model estimates and observational estimates of CO2
 # concentration at temperature thresholds with a rug plot
 # --------------------------------------------------------------------
+RCP_co2 = read.csv('RCP_CO2_concentration_HELIX_WP3.csv', sep = ',', strip.white = TRUE)
+ERF_total_anthro = read.csv('WG1AR5_AII.6.8_Total_anthropogenic_ERF_from_published_RCPs_(W_m–2).csv', sep = ',', strip.white = TRUE)
+ERF_co2 = read.csv('WG1AR5_TableAII.6.1_ERF_from_CO2_(W_m–2).csv', sep = ',', strip.white = TRUE)
+#plot(ERF_co2$RCP26)
+
+erf = read.csv('co2_and_total_erf.csv', sep = ',', strip.white = TRUE)
+
+transfer_ppm = function(ppm,co2_ppm_RCP, tot_anthro_erf_RCP, co2_erf_RCP){
+  # transfer between co2 and co2e (co2 equivalent forcing)
+  co2_tot_erf = approx(x=co2_ppm_RCP, 
+                       y=tot_anthro_erf_RCP,
+                       xout = ppm)
+  
+  tot_anthro_co2ppm = approx(x=co2_erf_RCP,
+                             y = co2_ppm_RCP,
+                             xout = co2_tot_erf$y)
+  co2e = tot_anthro_co2ppm$y
+  co2e
+}
+
+RCP85_1_5deg_CO2e = transfer_ppm(ppm=RCP85_1_5deg$CO2_ppmv,
+                                 co2_ppm_RCP=erf$co2_ppm_RCP85,
+                                 tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP85,
+                                 co2_erf_RCP=erf$co2_erf_RCP85)
+RCP85_2deg_CO2e = transfer_ppm(ppm=RCP85_2deg$CO2_ppmv,
+                                 co2_ppm_RCP=erf$co2_ppm_RCP85,
+                                 tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP85,
+                                 co2_erf_RCP=erf$co2_erf_RCP85)
+
+# use the RCPco2 relationship for extrapolation
+RCP60_1_5deg_CO2e = transfer_ppm(ppm=RCP6_1_5deg$CO2_ppmv,
+                                 co2_ppm_RCP=erf$co2_ppm_RCP85,
+                                 tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP60,
+                                 co2_erf_RCP=erf$co2_erf_RCP60
+)
+
+RCP60_2deg_CO2e = transfer_ppm(ppm=RCP6_2deg$CO2_ppmv,
+                               co2_ppm_RCP=erf$co2_ppm_RCP85,
+                               tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP60,
+                               co2_erf_RCP=erf$co2_erf_RCP60
+)
+# use the RCPco2 relationship for extrapolation
+RCP45_1_5deg_CO2e = transfer_ppm(ppm=RCP45_1_5deg$CO2_ppmv,
+                                 co2_ppm_RCP=erf$co2_ppm_RCP85,
+                                 tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP45,
+                                 co2_erf_RCP=erf$co2_erf_RCP45
+)
+RCP45_2deg_CO2e = transfer_ppm(ppm=RCP45_2deg$CO2_ppmv,
+                               co2_ppm_RCP=erf$co2_ppm_RCP85,
+                               tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP45,
+                               co2_erf_RCP=erf$co2_erf_RCP45
+)
+
+RCP26_1_5deg_CO2e = transfer_ppm(ppm=RCP26_1_5deg$CO2_ppmv,
+                                 co2_ppm_RCP=erf$co2_ppm_RCP26,
+                                 tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP26,
+                                 co2_erf_RCP=erf$co2_erf_RCP26
+)
+
+RCP26_2deg_CO2e = transfer_ppm(ppm=RCP26_2deg$CO2_ppmv,
+                               co2_ppm_RCP=erf$co2_ppm_RCP26,
+                               tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP26,
+                               co2_erf_RCP=erf$co2_erf_RCP26
+)
+
+
 
 rpch = '|'
 xlim = c(300, 1100)
@@ -298,13 +366,11 @@ R16col = rgb(col2rgb('tomato2')[1]/256,
              0.5)
 
 isicol = 'dodgerblue'
+ecol = 'darkorange'
 
-modlist = c('GFDL-ESM2M', 'NorESM1-M', 'MIROC-ESM-CHEM',
-            'HadGEM2-ES', 'MIROC5', 'IPSL-CM5A-LR')
+pdf(width = 7, height = 6, file = 'co2_dist_rug.pdf')
 
-pdf(width = 7, height = 5, file = 'co2_dist_rug.pdf')
-
-nf <- layout(matrix(c(1,2,3,4),2,2,byrow = TRUE), widths= c(4,4), heights= c(4,2), TRUE)
+nf <- layout(matrix(c(1,2,3,4),2,2,byrow = TRUE), widths= c(4,4), heights= c(3.5,2.5), TRUE)
 #layout.show(nf)
 par(mar = c(0,5,1,1), las = 1, fg = 'white')
 hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30, 
@@ -342,8 +408,8 @@ legend('right', legend = c('AR5', 'R16'), fill = c(ar5col, R16col),
 mtext('2 degrees', side = 3, line = -2, font = 2, col = 'black')
 
 par(mar = c(5,5,0,1), las = 1)
-plot(RCP85_1_5deg$CO2_ppmv,rep(4, length(RCP85_1_5deg$CO2_ppmv)), 
-     ylim = c(0,5),
+plot(RCP85_1_5deg$CO2_ppmv,rep(4.2, length(RCP85_1_5deg$CO2_ppmv)), 
+     ylim = c(0.5,4.5),
      xlim = xlim,
      axes = FALSE,
      xlab = expression(paste('CO'[2], ' concentration (ppm)')),
@@ -351,33 +417,49 @@ plot(RCP85_1_5deg$CO2_ppmv,rep(4, length(RCP85_1_5deg$CO2_ppmv)),
      col = 'black',
      pch = rpch)
 
-points(RCP6_1_5deg$CO2_ppmv,rep(3, length(RCP6_1_5deg$CO2_ppmv)),
+points(RCP6_1_5deg$CO2_ppmv,rep(3.2, length(RCP6_1_5deg$CO2_ppmv)),
        col = 'black',
        pch = rpch)
 
-points(RCP45_1_5deg$CO2_ppmv,rep(2, length(RCP45_1_5deg$CO2_ppmv)), 
+points(RCP45_1_5deg$CO2_ppmv,rep(2.2, length(RCP45_1_5deg$CO2_ppmv)), 
        col = 'black',
        pch = rpch)
 
-points(RCP26_1_5deg$CO2_ppmv,rep(1, length(RCP26_1_5deg$CO2_ppmv)),
+points(RCP26_1_5deg$CO2_ppmv,rep(1.2, length(RCP26_1_5deg$CO2_ppmv)),
        col = 'black',
        pch = rpch)
 
-
-points(RCP85_1_5deg_isimip$CO2_ppmv,rep(4, length(RCP85_1_5deg_isimip$CO2_ppmv)),
+points(RCP85_1_5deg_isimip$CO2_ppmv,rep(4.2, length(RCP85_1_5deg_isimip$CO2_ppmv)),
        col = isicol,
        pch = rpch)
 
-points(RCP6_1_5deg_isimip$CO2_ppmv,rep(3, length(RCP6_1_5deg_isimip$CO2_ppmv)),
+points(RCP6_1_5deg_isimip$CO2_ppmv,rep(3.2, length(RCP6_1_5deg_isimip$CO2_ppmv)),
        col = isicol,
        pch = rpch)
 
-points(RCP45_1_5deg_isimip$CO2_ppmv,rep(2, length(RCP45_1_5deg_isimip$CO2_ppmv)), 
+points(RCP45_1_5deg_isimip$CO2_ppmv,rep(2.2, length(RCP45_1_5deg_isimip$CO2_ppmv)), 
        col = isicol,
        pch = rpch)
 
-points(RCP26_1_5deg_isimip$CO2_ppmv,rep(1, length(RCP26_1_5deg_isimip$CO2_ppmv)),
+points(RCP26_1_5deg_isimip$CO2_ppmv,rep(1.2, length(RCP26_1_5deg_isimip$CO2_ppmv)),
        col = isicol,
+       pch = rpch)
+
+# Plot CO2e
+points(RCP85_1_5deg_CO2e,rep(3.8, length(RCP85_1_5deg_CO2e)),
+       col = ecol,
+       pch = rpch)
+
+points(RCP60_1_5deg_CO2e,rep(2.8, length(RCP60_1_5deg_CO2e)),
+       col = ecol,
+       pch = rpch)
+
+points(RCP45_1_5deg_CO2e,rep(1.8, length(RCP45_1_5deg_CO2e)), 
+       col = ecol,
+       pch = rpch)
+
+points(RCP26_1_5deg_CO2e,rep(0.8, length(RCP26_1_5deg_CO2e)),
+       col = ecol,
        pch = rpch)
 
 
@@ -386,8 +468,8 @@ axis(1, col = 'black')
 axis(2, labels = c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5'), at = 1:4, col = 'black')
 
 par(mar = c(5,2,0,4), las = 1)
-plot(RCP85_2deg$CO2_ppmv, rep(4, length(RCP85_2deg$CO2_ppmv)),
-     ylim = c(0,5),
+plot(RCP85_2deg$CO2_ppmv, rep(4.2, length(RCP85_2deg$CO2_ppmv)),
+     ylim = c(0.5,4.5),
      xlim = xlim,
      axes = FALSE,
      xlab = expression(paste('CO'[2], ' concentration (ppm)')),
@@ -396,25 +478,42 @@ plot(RCP85_2deg$CO2_ppmv, rep(4, length(RCP85_2deg$CO2_ppmv)),
      col = 'black'
 )
 axis(1, col = 'black')
-points(RCP6_2deg$CO2_ppmv,rep(3, length(RCP6_2deg$CO2_ppmv)),
+points(RCP6_2deg$CO2_ppmv,rep(3.2, length(RCP6_2deg$CO2_ppmv)),
        pch = rpch,col = 'black')
-points(RCP45_2deg$CO2_ppmv,rep(2, length(RCP45_2deg$CO2_ppmv)),
+points(RCP45_2deg$CO2_ppmv,rep(2.2, length(RCP45_2deg$CO2_ppmv)),
        pch = rpch,col = 'black')
-points(RCP26_2deg$CO2_ppmv,rep(1, length(RCP26_2deg$CO2_ppmv)),
+points(RCP26_2deg$CO2_ppmv,rep(1.2, length(RCP26_2deg$CO2_ppmv)),
        pch = rpch,col = 'black')
 
-points(RCP85_2deg_isimip$CO2_ppmv,rep(4, length(RCP85_2deg_isimip$CO2_ppmv)),
+points(RCP85_2deg_isimip$CO2_ppmv,rep(4.2, length(RCP85_2deg_isimip$CO2_ppmv)),
        pch = rpch,col = isicol)
-points(RCP6_2deg_isimip$CO2_ppmv,rep(3, length(RCP6_2deg_isimip$CO2_ppmv)),
+points(RCP6_2deg_isimip$CO2_ppmv,rep(3.2, length(RCP6_2deg_isimip$CO2_ppmv)),
        pch = rpch,col = isicol)
-points(RCP45_2deg_isimip$CO2_ppmv,rep(2, length(RCP45_2deg_isimip$CO2_ppmv)),
+points(RCP45_2deg_isimip$CO2_ppmv,rep(2.2, length(RCP45_2deg_isimip$CO2_ppmv)),
        pch = rpch,col = isicol)
-points(RCP26_2deg_isimip$CO2_ppmv,rep(1, length(RCP26_2deg_isimip$CO2_ppmv)),
+points(RCP26_2deg_isimip$CO2_ppmv,rep(1.2, length(RCP26_2deg_isimip$CO2_ppmv)),
        pch = rpch,col = isicol)
 
-legend('right', legend = c('CMIP5', 'CMIP5 & ISIMIP'), pch = rpch, 
-       col = c('black', isicol), text.col = 'black', cex = 0.8, bty = 'n')
+# Plot CO2e
+points(RCP85_2deg_CO2e,rep(3.8, length(RCP85_2deg_CO2e)),
+       col = ecol,
+       pch = rpch)
 
+points(RCP60_2deg_CO2e,rep(2.8, length(RCP60_2deg_CO2e)),
+       col = ecol,
+       pch = rpch)
+
+points(RCP45_2deg_CO2e,rep(1.8, length(RCP45_2deg_CO2e)), 
+       col = ecol,
+       pch = rpch)
+
+points(RCP26_2deg_CO2e,rep(0.8, length(RCP26_2deg_CO2e)),
+       col = ecol,
+       pch = rpch)
+
+legend('right', legend = c('CMIP5', 'CMIP5 & ISIMIP', expression(paste('CO'[2],'e'))), pch = rpch, 
+       col = c('black', isicol,ecol), text.col = 'black', cex = 0.8, bty = 'n'
+       )
 dev.off()
 
 
@@ -447,12 +546,7 @@ print(RCP26_1_5deg[order(RCP26_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
 # How do CO2 and total Radiative forcing vary together?
 # -----------------------------------------------------------------
 
-RCP_co2 = read.csv('RCP_CO2_concentration_HELIX_WP3.csv', sep = ',', strip.white = TRUE)
-ERF_total_anthro = read.csv('WG1AR5_AII.6.8_Total_anthropogenic_ERF_from_published_RCPs_(W_m–2).csv', sep = ',', strip.white = TRUE)
-ERF_co2 = read.csv('WG1AR5_TableAII.6.1_ERF_from_CO2_(W_m–2).csv', sep = ',', strip.white = TRUE)
-plot(ERF_co2$RCP26)
 
-erf = read.csv('co2_and_total_erf.csv', sep = ',', strip.white = TRUE)
 
 
 pdf(width = 5, height = 6, file = 'erf.pdf')
@@ -484,32 +578,39 @@ legend('topleft',
 
 dev.off()
 
-# transfer between co2 and co2equivalent forcing
-# # this code is the initial calculation
+# # transfer between co2 and co2equivalent forcing
+# # # this code is the initial calculation
 # apco2_toterf = approx(x=erf$co2_ppm_RCP85,
-#                       y = erf$tot_anthro_erf_RCP85, xout = 600)
-# 
+#                        y = erf$tot_anthro_erf_RCP85, xout = 600)
+# # 
 # aptot_anthro_co2ppm = approx(x=erf$co2_erf_RCP85,
-#                              y = erf$co2_ppm_RCP85, xout = apco2_toterf$y)
-
-transfer_ppm = function(ppm,co2_ppm_RCP, tot_anthro_erf_RCP, co2_erf_RCP){
-  # transfer between co2 and co2e (co2 equivalent forcing)
-  co2_tot_erf = approx(x=co2_ppm_RCP, 
-                        y=tot_anthro_erf_RCP,
-                        xout = ppm)
-  
-  tot_anthro_co2ppm = approx(x=co2_erf_RCP,
-                             y = co2_ppm_RCP,
-                             xout = co2_tot_erf$y)
-  co2e = tot_anthro_co2ppm$y
-  co2e
-}
-
-transfer_ppm(ppm=700,
-             co2_ppm_RCP=erf$co2_ppm_RCP85,
-             tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP85,
-             co2_erf_RCP=erf$co2_erf_RCP85
-             )
+#                               y = erf$co2_ppm_RCP85, xout = apco2_toterf$y)
+# 
+# 
+# 
+# transfer_ppm(ppm=RCP85_2deg$CO2_ppmv,
+#              co2_ppm_RCP=erf$co2_ppm_RCP85,
+#              tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP85,
+#              co2_erf_RCP=erf$co2_erf_RCP85
+# )
+# 
+# transfer_ppm(ppm=600,
+#              co2_ppm_RCP=erf$co2_ppm_RCP85,
+#              tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP60,
+#              co2_erf_RCP=erf$co2_erf_RCP60
+# )
+# 
+# transfer_ppm(ppm=440,
+#              co2_ppm_RCP=erf$co2_ppm_RCP85,
+#              tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP45,
+#              co2_erf_RCP=erf$co2_erf_RCP45
+# )
+# 
+# transfer_ppm(ppm=400,
+#              co2_ppm_RCP=erf$co2_ppm_RCP26,
+#              tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP26,
+#              co2_erf_RCP=erf$co2_erf_RCP26
+# )
 
 
 
