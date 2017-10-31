@@ -278,22 +278,29 @@ rpch = '|'
 xlim = c(300, 1100)
 ylim = c(0, 0.007)
 
+ar5col = 'darkgrey'
+R16col = rgb(col2rgb('tomato2')[1]/256,
+             col2rgb('tomato2')[2]/256,
+             col2rgb('tomato2')[3]/256,
+             0.5)
+
 pdf(width = 7, height = 6, file = 'co2_dist_rug.pdf')
 
 nf <- layout(matrix(c(1,2,3,4),2,2,byrow = TRUE), widths= c(4,4), heights= c(4,2), TRUE)
 #layout.show(nf)
-par(mar = c(0,5,2,1), las = 1)
+par(mar = c(0,5,2,1), las = 1, fg = 'white')
 hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30, 
      xlim = xlim,
      ylim = ylim,
      col = ar5col,
      main = "1.5 degrees",
      xlab = expression(paste("CO"[2]," conc. (ppm)")),
-     ylab = "",
+     ylab = "Relative probability density",
      axes = FALSE)
 
 hist(R16_1.5deg.trunc, freq = FALSE,
-     breaks = 30, add = TRUE, col = R16col
+     breaks = 30, add = TRUE, col = R16col,
+     fg = 'white'
 )
 
 #axis(2)
@@ -303,7 +310,7 @@ hist(samp_2deg.trunc, freq = FALSE, breaks = 30,
      ylim = ylim,
      col = ar5col,
      main = "2 degrees",
-     #xlab = expression(paste("CO"[2]," conc. (ppm)")),
+     xlab = '',
      ylab = '',
      axes = FALSE
 )
@@ -311,48 +318,49 @@ hist(samp_2deg.trunc, freq = FALSE, breaks = 30,
 hist(R16_2deg.trunc, freq = FALSE,
      breaks = 30, add = TRUE,col = R16col)
 legend('topright', legend = c('AR5', 'R16'), fill = c(ar5col, R16col), 
-       bty = 'n')
+       bty = 'n', text.col = 'black')
 
 par(mar = c(5,5,0,1), las = 1)
 plot(RCP85_1_5deg$CO2_ppmv,rep(4, length(RCP85_1_5deg$CO2_ppmv)), 
      ylim = c(0,5),
      xlim = xlim,
      axes = FALSE,
-     xlab = expression(paste('CO'[2], ' conc. (ppm)')),
+     xlab = expression(paste('CO'[2], ' concentration (ppm)')),
      ylab = '',
-     col = col1_5,
+     col = 'black',
      pch = rpch)
 
 points(RCP6_1_5deg$CO2_ppmv,rep(3, length(RCP6_1_5deg$CO2_ppmv)),
-       col = col1_5,
+       col = 'black',
        pch = rpch)
 
 points(RCP45_1_5deg$CO2_ppmv,rep(2, length(RCP45_1_5deg$CO2_ppmv)), 
-       col = col1_5,
+       col = 'black',
        pch = rpch)
 
 points(RCP26_1_5deg$CO2_ppmv,rep(1, length(RCP26_1_5deg$CO2_ppmv)),
-       col = col1_5,
+       col = 'black',
        pch = rpch)
-axis(1)
-axis(2, labels = c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5'), at = 1:4)
+axis(1, col = 'black')
+axis(2, labels = c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5'), at = 1:4, col = 'black')
 
 par(mar = c(5,2,0,4), las = 1)
 plot(RCP85_2deg$CO2_ppmv, rep(4, length(RCP85_2deg$CO2_ppmv)),
      ylim = c(0,5),
      xlim = xlim,
      axes = FALSE,
-     xlab = expression(paste('CO'[2], ' conc. (ppm)')),
+     xlab = expression(paste('CO'[2], ' concentration (ppm)')),
      ylab = '',
-     pch = rpch
+     pch = rpch,
+     col = 'black'
 )
-axis(1)
+axis(1, col = 'black')
 points(RCP6_2deg$CO2_ppmv,rep(3, length(RCP6_2deg$CO2_ppmv)),
-       pch = rpch)
+       pch = rpch,col = 'black')
 points(RCP45_2deg$CO2_ppmv,rep(2, length(RCP45_2deg$CO2_ppmv)),
-       pch = rpch)
+       pch = rpch,col = 'black')
 points(RCP26_2deg$CO2_ppmv,rep(1, length(RCP26_2deg$CO2_ppmv)),
-       pch = rpch)
+       pch = rpch,col = 'black')
 
 dev.off()
 
