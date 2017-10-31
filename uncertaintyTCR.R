@@ -412,7 +412,7 @@ points(RCP45_2deg_isimip$CO2_ppmv,rep(2, length(RCP45_2deg_isimip$CO2_ppmv)),
 points(RCP26_2deg_isimip$CO2_ppmv,rep(1, length(RCP26_2deg_isimip$CO2_ppmv)),
        pch = rpch,col = isicol)
 
-legend('right', legend = c('AR5', 'AR5 & ISIMIP'), pch = rpch, 
+legend('right', legend = c('CMIP5', 'CMIP5 & ISIMIP'), pch = rpch, 
        col = c('black', isicol), text.col = 'black', cex = 0.8, bty = 'n')
 
 dev.off()
@@ -442,6 +442,74 @@ print(RCP45_1_5deg[order(RCP45_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
 
 print("RCP2.6.0 1.5 degrees")
 print(RCP26_1_5deg[order(RCP26_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
+
+# -----------------------------------------------------------------
+# How do CO2 and total Radiative forcing vary together?
+# -----------------------------------------------------------------
+
+RCP_co2 = read.csv('RCP_CO2_concentration_HELIX_WP3.csv', sep = ',', strip.white = TRUE)
+ERF_total_anthro = read.csv('WG1AR5_AII.6.8_Total_anthropogenic_ERF_from_published_RCPs_(W_m–2).csv', sep = ',', strip.white = TRUE)
+ERF_co2 = read.csv('WG1AR5_TableAII.6.1_ERF_from_CO2_(W_m–2).csv', sep = ',', strip.white = TRUE)
+plot(ERF_co2$RCP26)
+
+erf = read.csv('co2_and_total_erf.csv', sep = ',', strip.white = TRUE)
+
+
+pdf(width = 5, height = 6, file = 'erf.pdf')
+par(las = 1, mar = c(5,5,3,1))
+plot(erf$co2_ppm_RCP85, erf$tot_anthro_erf_RCP85,
+     type = 'l', lwd = 2.5,
+     xlim = c(350,1000), ylim = c(1,9),
+     xlab = expression(paste('CO'[2], ' concentration (ppm)')),
+     ylab = expression(paste('Forcing (Wm'^-2,')')),
+     bty = 'n'
+     )
+lines(erf$co2_ppm_RCP85, erf$co2_erf_RCP85, lwd = 2.5, lty = 'dashed')
+
+lines(erf$co2_ppm_RCP60, erf$tot_anthro_erf_RCP60, lwd = 2.5, col = 'tomato2')
+lines(erf$co2_ppm_RCP60, erf$co2_erf_RCP60, lty = 'dashed',lwd = 2.5, col = 'tomato2')
+
+lines(erf$co2_ppm_RCP45, erf$tot_anthro_erf_RCP45, lwd = 2.5, col = 'dodgerblue')
+lines(erf$co2_ppm_RCP45, erf$co2_erf_RCP45, lwd = 2.5, lty = 'dashed', col = 'dodgerblue')
+
+lines(erf$co2_ppm_RCP26, erf$tot_anthro_erf_RCP26, lwd = 2.5 , col = 'grey')
+lines(erf$co2_ppm_RCP26, erf$co2_erf_RCP26, lwd = 2.5,lty = 'dashed', col = 'grey')
+legend('topleft',
+       c('RCP8.5', 'RCP6.0', 'RCP4.5', 'RCP2.6', 'total ERF', expression(paste('CO'[2],' ERF'))),
+       lty = c('solid', 'solid','solid', 'solid','solid', 'dashed'),
+       col = c('black', 'tomato2', 'dodgerblue', 'grey', 'black', 'black'),
+       bty = 'n',
+       lwd = 2, cex = 0.8
+       )
+
+dev.off()
+
+# transfer between co2 and co2equivalent forcing
+# # this code is the initial calculation
+# apco2_toterf = approx(x=erf$co2_ppm_RCP85,
+#                       y = erf$tot_anthro_erf_RCP85, xout = 600)
+# 
+# aptot_anthro_co2ppm = approx(x=erf$co2_erf_RCP85,
+#                              y = erf$co2_ppm_RCP85, xout = apco2_toterf$y)
+
+transfer_ppm = function(ppm,co2_ppm_RCP, tot_anthro_erf_RCP, co2_erf_RCP){
+  # transfer between co2 and co2e (co2 equivalent forcing)
+  co2_tot_erf = approx(x=co2_ppm_RCP, 
+                        y=tot_anthro_erf_RCP,
+                        xout = ppm)
+  
+  tot_anthro_co2ppm = approx(x=co2_erf_RCP,
+                             y = co2_ppm_RCP,
+                             xout = co2_tot_erf$y)
+  co2e = tot_anthro_co2ppm$y
+  co2e
+}
+
+transfer_ppm(ppm=700,
+             co2_ppm_RCP=erf$co2_ppm_RCP85,
+             tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP85,
+             co2_erf_RCP=erf$co2_erf_RCP85
+             )
 
 
 
