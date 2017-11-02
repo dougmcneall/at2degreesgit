@@ -612,6 +612,108 @@ dev.off()
 #              co2_erf_RCP=erf$co2_erf_RCP26
 # )
 
+perc = function(samp, thres){
+  
+  out = rep(NA, length(thres))
+  for (i in 1:length(thres)){
+    
+    out[i] = sum(samp<thres[i], na.rm = TRUE)/(length(samp))
+  }
+  out
+}
+
+# ranges of the co2 pdfs spanned by the models
+print('CMIP5 RCP85 range of AR5 2deg pdf %ile') 
+print(perc(samp=samp_2deg, thres = range(RCP85_2deg$CO2_ppmv)) *100)
+print('CMIP5 RCP60 range of AR5 2deg pdf %ile') 
+print(perc(samp=samp_2deg, thres = range(RCP6_2deg$CO2_ppmv)) *100)
+print('CMIP5 RCP45 range of AR5 2deg pdf %ile') 
+print(perc(samp=samp_2deg, thres = range(RCP45_2deg$CO2_ppmv)) * 100)
+print('CMIP5 RCP26 range of AR5 2deg pdf %ile') 
+print(perc(samp=samp_2deg, thres = range(RCP26_2deg$CO2_ppmv)) * 100)
+
+print('CMIP5 RCP85 range of AR5 1.5deg pdf %ile') 
+print(perc(samp=samp_1.5deg, thres = range(RCP85_1_5deg$CO2_ppmv)) * 100)
+print('CMIP5 RCP60 range of AR5 1.5deg pdf %ile')
+print(perc(samp=samp_1.5deg, thres = range(RCP6_1_5deg$CO2_ppmv)) * 100)
+print('CMIP5 RCP45 range of AR5 1.5deg pdf %ile') 
+print(perc(samp=samp_1.5deg, thres = range(RCP45_1_5deg$CO2_ppmv)) * 100)
+print('CMIP5 RCP26 range of AR5 1.5deg pdf %ile') 
+print(perc(samp=samp_1.5deg, thres = range(RCP26_1_5deg$CO2_ppmv)) * 100)
+
+
+print('CMIP5 RCP85 range of R16 2deg pdf %ile') 
+print(perc(samp=R16_2deg, thres = range(RCP85_2deg$CO2_ppmv)) * 100)
+print('CMIP5 RCP60 range of R16 2deg pdf %ile') 
+print(perc(samp=R16_2deg, thres = range(RCP6_2deg$CO2_ppmv)) * 100)
+print('CMIP5 RCP45 range of R16 2deg pdf %ile') 
+print(perc(samp=R16_2deg, thres = range(RCP45_2deg$CO2_ppmv)) * 100)
+print('CMIP5 RCP26 range of R16 2deg pdf %ile') 
+print(perc(samp=R16_2deg, thres = range(RCP26_2deg$CO2_ppmv)) * 100)
+
+
+print('CMIP5 RCP85 range of R16 1.5deg pdf %ile') 
+print(perc(samp=R16_1.5deg, thres = range(RCP85_1_5deg$CO2_ppmv)) * 100)
+print('CMIP5 RCP60 range of R16 1.5deg pdf %ile') 
+print(perc(samp=R16_1.5deg, thres = range(RCP6_1_5deg$CO2_ppmv)) * 100)
+print('CMIP5 RCP45 range of R16 1.5deg pdf %ile') 
+print(perc(samp=R16_1.5deg, thres = range(RCP45_1_5deg$CO2_ppmv)) * 100)
+print('CMIP5 RCP26 range of R16 1.5deg pdf %ile') 
+print(perc(samp=R16_1.5deg, thres = range(RCP26_1_5deg$CO2_ppmv)) * 100)
+
+# ranges of the co2 pdfs spanned by the models using co2e
+print('CMIP5 Co2e RCP85 range of AR5 2deg pdf %ile') 
+print(perc(samp=samp_2deg, thres = range(RCP85_2deg_CO2e)) * 100)
+print('CMIP5 Co2e RCP85 range of AR5 2deg pdf %ile') 
+print(perc(samp=samp_2deg, thres = range(RCP60_2deg_CO2e)) * 100)
+print('CMIP5 Co2e RCP85 range of AR5 2deg pdf %ile')
+print(perc(samp=samp_2deg, thres = range(RCP45_2deg_CO2e)) * 100)
+print('CMIP5 Co2e RCP85 range of AR5 2deg pdf %ile') 
+print(perc(samp=samp_2deg, thres = range(RCP26_2deg_CO2e)) * 100)
+
+
+print('CMIP5 Co2e RCP85 range of AR5 1.5deg pdf %ile') 
+print(perc(samp=samp_1.5deg, thres = range(RCP85_1_5deg_CO2e)) * 100)
+print('CMIP5 Co2e RCP60 range of AR5 1.5deg pdf %ile') 
+print(perc(samp=samp_1.5deg, thres = range(RCP60_1_5deg_CO2e)) * 100)
+print('CMIP5 Co2e RCP45 range of AR5 1.5deg pdf %ile') 
+print(perc(samp=samp_1.5deg, thres = range(RCP45_1_5deg_CO2e)) * 100)
+print('CMIP5 Co2e RCP26 range of AR5 1.5deg pdf %ile') 
+print(perc(samp=samp_1.5deg, thres = range(RCP26_1_5deg_CO2e)) * 100)
+
+print('CMIP5 Co2e RCP85 range of R16 2deg pdf %ile') 
+print(perc(samp=R16_2deg, thres = range(RCP85_2deg_CO2e)) * 100)
+print('CMIP5 Co2e RCP60 range of R16 2deg pdf %ile') 
+print(perc(samp=R16_2deg, thres = range(RCP60_2deg_CO2e)) * 100)
+print('CMIP5 Co2e RCP45 range of R16 2deg pdf %ile') 
+print(perc(samp=R16_2deg, thres = range(RCP45_2deg_CO2e)) * 100)
+print('CMIP5 Co2e RCP26 range of R16 2deg pdf %ile') 
+print(perc(samp=R16_2deg, thres = range(RCP26_2deg_CO2e)) * 100)
+
+
+print('CMIP5 Co2e RCP85 range of R16 1.5deg pdf %ile') 
+print(perc(samp=R16_1.5deg, thres = range(RCP85_1_5deg_CO2e)) * 100)
+print('CMIP5 Co2e RCP85 range of R16 1.5deg pdf %ile') 
+print(perc(samp=R16_1.5deg, thres = range(RCP60_1_5deg_CO2e)) * 100)
+print('CMIP5 Co2e RCP85 range of R16 1.5deg pdf %ile') 
+print(perc(samp=R16_1.5deg, thres = range(RCP45_1_5deg_CO2e)) * 100)
+print('CMIP5 Co2e RCP85 range of R16 1.5deg pdf %ile') 
+print(perc(samp=R16_1.5deg, thres = range(RCP26_1_5deg_CO2e)) * 100)
+
+
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+print(paste('AR5 2 degrees mode is ', Mode(samp_2deg) ))
+print(paste('AR5 1.5 degrees mode is ', Mode(samp_1.5deg) ))
+
+print(paste('R16 2 degrees mode is ', Mode(R16_2deg) ))
+print(paste('R16 1.5 degrees mode is ', Mode(R16_1.5deg) ))
+
+
+
 
 
 
