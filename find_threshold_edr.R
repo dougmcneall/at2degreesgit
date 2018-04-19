@@ -16,7 +16,7 @@ findThres = function(time, x, f = 1/5, thres = 2, y.ix = 1:30){
   out
 }
 
-findThresRolling = function(time, y, k = 20, thres = 2, bp = 1861:1880){
+findThresRolling = function(time, y, conc, k = 20, thres = 2, bp = 1861:1880){
   # smooth a timeseries with rollmean and find the point where
   # it crosses a threshold.
   # Baseline is calculated using only the years that are in the baseline period
@@ -38,7 +38,11 @@ findThresRolling = function(time, y, k = 20, thres = 2, bp = 1861:1880){
   #out = time[ min(which(ysmooth.change > thres))]
   thresyear = tryCatch(time[ min(which(ysmooth.change > thres))],
                      error=function(err) NA)
-  return(list(thresyear=thresyear, ysmooth = ysmooth,
+  
+  thresconc = tryCatch(conc[ min(which(ysmooth.change > thres))],
+                       error=function(err) NA)
+  
+  return(list(thresyear=thresyear, thresconc = thresconc, ysmooth = ysmooth,
               ysmooth.change = ysmooth.change,
               y.change = y.change))
 }
@@ -46,30 +50,35 @@ findThresRolling = function(time, y, k = 20, thres = 2, bp = 1861:1880){
 modlist = dir('booth')
 nmod = length(modlist)
 
-edr_15 = rep(NA, length = nmod)
-edr_2  = rep(NA, length = nmod)
+edr_15_year = rep(NA, length = nmod)
+edr_15_conc = rep(NA, length = nmod)
+edr_2_year  = rep(NA, length = nmod)
+edr_2_conc  = rep(NA, length = nmod)
+
 
 #tas = c(dat$time, recursive = TRUE)
 tas = NULL
 
 for (i in 1:nmod){
   dat = read.table(paste0('booth/', modlist[i]), header = TRUE)
-  edr_15[i] = findThresRolling(time = dat$time, y = dat$tas, thres = 1.5)$thresyear
-  edr_2[i] =  findThresRolling(time = dat$time, y = dat$tas, thres = 2)$thresyear
+  edr_15_year[i] = findThresRolling(time = dat$time,y = dat$tas, conc = dat$CO2, thres = 1.5)$thresyear
+  edr_15_conc[i] = findThresRolling(time = dat$time, y = dat$tas, conc = dat$CO2, thres = 1.5)$thresconc
+  edr_2_year[i] =  findThresRolling(time = dat$time, y = dat$tas, conc = dat$CO2, thres = 2)$thresyear
+  edr_2_conc[i] =  findThresRolling(time = dat$time, y = dat$tas, conc = dat$CO2, thres = 2)$thresconc
+  
 }
 
 # removes part of string after the dot
 modname = gsub("\\..*","", modlist)
 
-passyears = data.frame(cbind(modname,round(edr_15),round(edr_2) ))
-colnames(passyears) = c('modname', "SWL_1.5", 'SWL_2')
+passyears = data.frame(cbind(modname,round(edr_15_year),edr_15_conc,
+                             round(edr_2_year), edr_2_conc ))
+colnames(passyears) = c('modname', "year_1.5","conc_1.5", "year_2", "conc_2")
 
 print(passyears)
 
 write.table(passyears, file = 'passyears.csv', row.names = FALSE, quote = FALSE, sep = ",")
 
-#plot(x, ysmooth$y, type = 'l')
-#lines(x, dat$tas, col = 'grey')
 alltime = 1851:2100
 
 pdf(file = 'emission_driven_temps.pdf')
