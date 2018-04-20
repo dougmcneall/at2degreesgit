@@ -292,6 +292,7 @@ RCP_co2 = read.csv('RCP_CO2_concentration_HELIX_WP3.csv', sep = ',', strip.white
 ERF_total_anthro = read.csv('WG1AR5_AII.6.8_Total_anthropogenic_ERF_from_published_RCPs_(W_m–2).csv', sep = ',', strip.white = TRUE)
 ERF_co2 = read.csv('WG1AR5_TableAII.6.1_ERF_from_CO2_(W_m–2).csv', sep = ',', strip.white = TRUE)
 #plot(ERF_co2$RCP26)
+passyears = read.csv('passyears.csv')
 
 erf = read.csv('co2_and_total_erf.csv', sep = ',', strip.white = TRUE)
 
