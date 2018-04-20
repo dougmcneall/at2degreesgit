@@ -367,6 +367,7 @@ R16col = rgb(col2rgb('tomato2')[1]/256,
 
 isicol = 'dodgerblue'
 ecol = 'darkorange'
+edcol = 'pink1'
 
 pdf(width = 7, height = 6, file = 'co2_dist_rug.pdf')
 
@@ -407,15 +408,19 @@ legend('right', legend = c('AR5', 'R16'), fill = c(ar5col, R16col),
 
 mtext('2 degrees', side = 3, line = -2, font = 2, col = 'black')
 
-par(mar = c(5,5,0,1), las = 1)
+par(mar = c(4,5,0,1), las = 1)
 plot(RCP85_1_5deg$CO2_ppmv,rep(4.2, length(RCP85_1_5deg$CO2_ppmv)), 
-     ylim = c(0.5,4.5),
+     ylim = c(0.5,5),
      xlim = xlim,
      axes = FALSE,
      xlab = expression(paste('CO'[2], ' concentration (ppm)')),
      ylab = '',
      col = 'black',
      pch = rpch)
+
+points(passyears$conc_1.5, rep(4.6, length(passyears$conc_1.5)),
+       col = edcol,
+       pch = rpch)
 
 points(RCP6_1_5deg$CO2_ppmv,rep(3.2, length(RCP6_1_5deg$CO2_ppmv)),
        col = 'black',
@@ -445,6 +450,7 @@ points(RCP26_1_5deg_isimip$CO2_ppmv,rep(1.2, length(RCP26_1_5deg_isimip$CO2_ppmv
        col = isicol,
        pch = rpch)
 
+
 # Plot CO2e
 points(RCP85_1_5deg_CO2e,rep(3.8, length(RCP85_1_5deg_CO2e)),
        col = ecol,
@@ -465,11 +471,11 @@ points(RCP26_1_5deg_CO2e,rep(0.8, length(RCP26_1_5deg_CO2e)),
 
 
 axis(1, col = 'black')
-axis(2, labels = c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5'), at = 1:4, col = 'black')
+axis(2, labels = c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5'), at = c(1,2,3, 4.2), col = 'black')
 
-par(mar = c(5,2,0,4), las = 1)
+par(mar = c(4,2,0,4), las = 1)
 plot(RCP85_2deg$CO2_ppmv, rep(4.2, length(RCP85_2deg$CO2_ppmv)),
-     ylim = c(0.5,4.5),
+     ylim = c(0.5,5),
      xlim = xlim,
      axes = FALSE,
      xlab = expression(paste('CO'[2], ' concentration (ppm)')),
@@ -478,6 +484,11 @@ plot(RCP85_2deg$CO2_ppmv, rep(4.2, length(RCP85_2deg$CO2_ppmv)),
      col = 'black'
 )
 axis(1, col = 'black')
+
+points(passyears$conc_2, rep(4.6, length(passyears$conc_2)),
+       col = edcol,
+       pch = rpch)
+
 points(RCP6_2deg$CO2_ppmv,rep(3.2, length(RCP6_2deg$CO2_ppmv)),
        pch = rpch,col = 'black')
 points(RCP45_2deg$CO2_ppmv,rep(2.2, length(RCP45_2deg$CO2_ppmv)),
@@ -511,8 +522,8 @@ points(RCP26_2deg_CO2e,rep(0.8, length(RCP26_2deg_CO2e)),
        col = ecol,
        pch = rpch)
 
-legend('right', legend = c('CMIP5', 'CMIP5 & ISIMIP', expression(paste('CO'[2],'e'))), pch = rpch, 
-       col = c('black', isicol,ecol), text.col = 'black', cex = 0.8, bty = 'n'
+legend('right', legend = c('Emissions driven', 'CMIP5', 'CMIP5 & ISIMIP', expression(paste('CO'[2],'e'))), pch = rpch, 
+       col = c(edcol,'black', isicol,ecol), text.col = 'black', cex = 0.8, bty = 'n'
        )
 dev.off()
 
@@ -699,6 +710,17 @@ print('CMIP5 Co2e RCP85 range of R16 1.5deg pdf %ile')
 print(perc(samp=R16_1.5deg, thres = range(RCP45_1_5deg_CO2e)) * 100)
 print('CMIP5 Co2e RCP85 range of R16 1.5deg pdf %ile') 
 print(perc(samp=R16_1.5deg, thres = range(RCP26_1_5deg_CO2e)) * 100)
+
+
+print('Emissions driven RCP85 range of AR5 1.5deg pdf %ile') 
+print(perc(samp=samp_1.5deg, thres = range(passyears$conc_1.5)) *100)
+print('Emissions driven RCP85 range of AR5 2deg pdf %ile') 
+print(perc(samp=samp_2deg, thres = range(passyears$conc_2)) *100)
+
+print('Emissions driven RCP85 range of R16 1.5deg pdf %ile') 
+print(perc(samp=R16_1.5deg, thres = range(passyears$conc_1.5)) *100)
+print('Emissions driven RCP85 range of AR5 2deg pdf %ile') 
+print(perc(samp=R16_2deg, thres = range(passyears$conc_2)) *100)
 
 
 Mode <- function(x) {

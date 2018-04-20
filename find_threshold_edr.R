@@ -4,8 +4,6 @@
 
 library(zoo)
 
-dat = read.table("booth/sum_bcc-csm1-1-m.txt", head = TRUE)
-
 findThres = function(time, x, f = 1/5, thres = 2, y.ix = 1:30){
   # smooth a timeseries and find the point where
   # it crosses a threshold.
