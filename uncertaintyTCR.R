@@ -370,7 +370,8 @@ isicol = 'dodgerblue'
 ecol = 'darkorange'
 edcol = 'pink1'
 
-pdf(width = 7, height = 6, file = 'co2_dist_rug.pdf')
+# Plot CO2 pdfs with rug plots for CMIP5, ISIMIP *AND* emissions driven runs
+pdf(width = 7, height = 6, file = 'co2_dist_rug_emis.pdf')
 
 nf <- layout(matrix(c(1,2,3,4),2,2,byrow = TRUE), widths= c(4,4), heights= c(3.5,2.5), TRUE)
 #layout.show(nf)
@@ -528,6 +529,154 @@ legend('right', legend = c('Emissions driven', 'CMIP5', 'CMIP5 & ISIMIP', expres
        )
 dev.off()
 
+# Now the same plot, but without the emissions driven runs
+pdf(width = 7, height = 6, file = 'co2_dist_rug.pdf')
+
+nf <- layout(matrix(c(1,2,3,4),2,2,byrow = TRUE), widths= c(4,4), heights= c(3.5,2.5), TRUE)
+#layout.show(nf)
+par(mar = c(0,5,1,1), las = 1, fg = 'white')
+hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30, 
+     xlim = xlim,
+     ylim = ylim,
+     col = ar5col,
+     main = "",
+     xlab = expression(paste("CO"[2]," conc. (ppm)")),
+     ylab = "Relative probability density",
+     axes = FALSE)
+
+hist(R16_1.5deg.trunc, freq = FALSE,
+     breaks = 30, add = TRUE, col = R16col,
+     fg = 'white'
+)
+mtext('1.5 degrees', side = 3, line = -2, font = 2, col = 'black')
+
+#axis(2)
+par(mar = c(0,2,1,4), las = 1)
+hist(samp_2deg.trunc, freq = FALSE, breaks = 30, 
+     xlim = xlim,
+     ylim = ylim,
+     col = ar5col,
+     main = "",
+     xlab = '',
+     ylab = '',
+     axes = FALSE
+)
+
+hist(R16_2deg.trunc, freq = FALSE,
+     breaks = 30, add = TRUE,col = R16col)
+legend('right', legend = c('AR5', 'R16'), fill = c(ar5col, R16col), 
+       bty = 'n', text.col = 'black', border = 'white')
+
+mtext('2 degrees', side = 3, line = -2, font = 2, col = 'black')
+
+par(mar = c(5,5,0,1), las = 1)
+plot(RCP85_1_5deg$CO2_ppmv,rep(4.2, length(RCP85_1_5deg$CO2_ppmv)), 
+     ylim = c(0.5,4.5),
+     xlim = xlim,
+     axes = FALSE,
+     xlab = expression(paste('CO'[2], ' concentration (ppm)')),
+     ylab = '',
+     col = 'black',
+     pch = rpch)
+
+points(RCP6_1_5deg$CO2_ppmv,rep(3.2, length(RCP6_1_5deg$CO2_ppmv)),
+       col = 'black',
+       pch = rpch)
+
+points(RCP45_1_5deg$CO2_ppmv,rep(2.2, length(RCP45_1_5deg$CO2_ppmv)), 
+       col = 'black',
+       pch = rpch)
+
+points(RCP26_1_5deg$CO2_ppmv,rep(1.2, length(RCP26_1_5deg$CO2_ppmv)),
+       col = 'black',
+       pch = rpch)
+
+points(RCP85_1_5deg_isimip$CO2_ppmv,rep(4.2, length(RCP85_1_5deg_isimip$CO2_ppmv)),
+       col = isicol,
+       pch = rpch)
+
+points(RCP6_1_5deg_isimip$CO2_ppmv,rep(3.2, length(RCP6_1_5deg_isimip$CO2_ppmv)),
+       col = isicol,
+       pch = rpch)
+
+points(RCP45_1_5deg_isimip$CO2_ppmv,rep(2.2, length(RCP45_1_5deg_isimip$CO2_ppmv)), 
+       col = isicol,
+       pch = rpch)
+
+points(RCP26_1_5deg_isimip$CO2_ppmv,rep(1.2, length(RCP26_1_5deg_isimip$CO2_ppmv)),
+       col = isicol,
+       pch = rpch)
+
+# Plot CO2e
+points(RCP85_1_5deg_CO2e,rep(3.8, length(RCP85_1_5deg_CO2e)),
+       col = ecol,
+       pch = rpch)
+
+points(RCP60_1_5deg_CO2e,rep(2.8, length(RCP60_1_5deg_CO2e)),
+       col = ecol,
+       pch = rpch)
+
+points(RCP45_1_5deg_CO2e,rep(1.8, length(RCP45_1_5deg_CO2e)), 
+       col = ecol,
+       pch = rpch)
+
+points(RCP26_1_5deg_CO2e,rep(0.8, length(RCP26_1_5deg_CO2e)),
+       col = ecol,
+       pch = rpch)
+
+
+
+axis(1, col = 'black')
+axis(2, labels = c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5'), at = 1:4, col = 'black')
+
+par(mar = c(5,2,0,4), las = 1)
+plot(RCP85_2deg$CO2_ppmv, rep(4.2, length(RCP85_2deg$CO2_ppmv)),
+     ylim = c(0.5,4.5),
+     xlim = xlim,
+     axes = FALSE,
+     xlab = expression(paste('CO'[2], ' concentration (ppm)')),
+     ylab = '',
+     pch = rpch,
+     col = 'black'
+)
+axis(1, col = 'black')
+points(RCP6_2deg$CO2_ppmv,rep(3.2, length(RCP6_2deg$CO2_ppmv)),
+       pch = rpch,col = 'black')
+points(RCP45_2deg$CO2_ppmv,rep(2.2, length(RCP45_2deg$CO2_ppmv)),
+       pch = rpch,col = 'black')
+points(RCP26_2deg$CO2_ppmv,rep(1.2, length(RCP26_2deg$CO2_ppmv)),
+       pch = rpch,col = 'black')
+
+points(RCP85_2deg_isimip$CO2_ppmv,rep(4.2, length(RCP85_2deg_isimip$CO2_ppmv)),
+       pch = rpch,col = isicol)
+points(RCP6_2deg_isimip$CO2_ppmv,rep(3.2, length(RCP6_2deg_isimip$CO2_ppmv)),
+       pch = rpch,col = isicol)
+points(RCP45_2deg_isimip$CO2_ppmv,rep(2.2, length(RCP45_2deg_isimip$CO2_ppmv)),
+       pch = rpch,col = isicol)
+points(RCP26_2deg_isimip$CO2_ppmv,rep(1.2, length(RCP26_2deg_isimip$CO2_ppmv)),
+       pch = rpch,col = isicol)
+
+# Plot CO2e
+points(RCP85_2deg_CO2e,rep(3.8, length(RCP85_2deg_CO2e)),
+       col = ecol,
+       pch = rpch)
+
+points(RCP60_2deg_CO2e,rep(2.8, length(RCP60_2deg_CO2e)),
+       col = ecol,
+       pch = rpch)
+
+points(RCP45_2deg_CO2e,rep(1.8, length(RCP45_2deg_CO2e)), 
+       col = ecol,
+       pch = rpch)
+
+points(RCP26_2deg_CO2e,rep(0.8, length(RCP26_2deg_CO2e)),
+       col = ecol,
+       pch = rpch)
+
+legend('right', legend = c('CMIP5', 'CMIP5 & ISIMIP', expression(paste('CO'[2],'e'))), pch = rpch, 
+       col = c('black', isicol,ecol), text.col = 'black', cex = 0.8, bty = 'n'
+)
+dev.off()
 
 print("RCP8.5 2 degrees")
 print(RCP85_2deg[order(RCP85_2deg$CO2_ppmv, decreasing = TRUE) , ])
@@ -553,6 +702,12 @@ print(RCP45_1_5deg[order(RCP45_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
 
 print("RCP2.6.0 1.5 degrees")
 print(RCP26_1_5deg[order(RCP26_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
+
+
+
+
+
+
 
 # -----------------------------------------------------------------
 # How do CO2 and total Radiative forcing vary together?
