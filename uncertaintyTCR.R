@@ -389,7 +389,7 @@ hist(R16_1.5deg.trunc, freq = FALSE,
      breaks = 30, add = TRUE, col = R16col,
      fg = 'white'
 )
-mtext('1.5 degrees', side = 3, line = -2, font = 2, col = 'black')
+mtext(expression(paste('1.5',degree, 'C short term warming')), side = 3, line = -1, font = 2, col = 'black')
 
 #axis(2)
 par(mar = c(0,2,1,4), las = 1)
@@ -408,17 +408,18 @@ hist(R16_2deg.trunc, freq = FALSE,
 legend('right', legend = c('AR5', 'R16'), fill = c(ar5col, R16col), 
        bty = 'n', text.col = 'black', border = 'white')
 
-mtext('2 degrees', side = 3, line = -2, font = 2, col = 'black')
+mtext(expression(paste('2',degree, 'C short term warming')), side = 3, line = -1, font = 2, col = 'black')
 
 par(mar = c(4,5,0,1), las = 1)
 plot(RCP85_1_5deg$CO2_ppmv,rep(4.2, length(RCP85_1_5deg$CO2_ppmv)), 
      ylim = c(0.5,5),
      xlim = xlim,
      axes = FALSE,
-     xlab = expression(paste('CO'[2], ' concentration (ppm)')),
+     xlab = expression(paste('CO'[2], ' conc. (ppm) at time of first reaching 1.5',degree,'C')),
      ylab = '',
      col = 'black',
-     pch = rpch)
+     pch = rpch,
+     cex.lab = 0.9)
 
 points(passyears$conc_1.5, rep(4.6, length(passyears$conc_1.5)),
        col = edcol,
@@ -471,8 +472,7 @@ points(RCP26_1_5deg_CO2e,rep(0.8, length(RCP26_1_5deg_CO2e)),
        pch = rpch)
 
 
-
-axis(1, col = 'black')
+axis(1, col = 'black', at = seq(from = 300, to = 1100, by = 100))
 axis(2, labels = c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5'), at = c(1,2,3, 4.2), col = 'black')
 
 par(mar = c(4,2,0,4), las = 1)
@@ -480,12 +480,13 @@ plot(RCP85_2deg$CO2_ppmv, rep(4.2, length(RCP85_2deg$CO2_ppmv)),
      ylim = c(0.5,5),
      xlim = xlim,
      axes = FALSE,
-     xlab = expression(paste('CO'[2], ' concentration (ppm)')),
+     xlab = expression(paste('CO'[2], ' conc. (ppm) at time of first reaching 2',degree,'C')),
      ylab = '',
      pch = rpch,
-     col = 'black'
+     col = 'black',
+     cex.lab = 0.9
 )
-axis(1, col = 'black')
+axis(1, col = 'black', at = seq(from = 300, to = 1100, by = 100))
 
 points(passyears$conc_2, rep(4.6, length(passyears$conc_2)),
        col = edcol,
@@ -529,12 +530,19 @@ legend('right', legend = c('Emissions driven', 'CMIP5', 'CMIP5 & ISIMIP', expres
        )
 dev.off()
 
+
+
+
+
+
+# -----------------------------------------------------------------
 # Now the same plot, but without the emissions driven runs
+# -----------------------------------------------------------------
 pdf(width = 7, height = 6, file = 'co2_dist_rug.pdf')
 
 nf <- layout(matrix(c(1,2,3,4),2,2,byrow = TRUE), widths= c(4,4), heights= c(3.5,2.5), TRUE)
 #layout.show(nf)
-par(mar = c(0,5,1,1), las = 1, fg = 'white')
+par(mar = c(0,5,2,1), las = 1, fg = 'white')
 hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30, 
      xlim = xlim,
      ylim = ylim,
@@ -548,10 +556,9 @@ hist(R16_1.5deg.trunc, freq = FALSE,
      breaks = 30, add = TRUE, col = R16col,
      fg = 'white'
 )
-mtext('1.5 degrees', side = 3, line = -2, font = 2, col = 'black')
+mtext(expression(paste('1.5',degree, 'C short term warming')), side = 3, line = -1, font = 2, col = 'black')
 
-#axis(2)
-par(mar = c(0,2,1,4), las = 1)
+par(mar = c(0,2,2,4), las = 1)
 hist(samp_2deg.trunc, freq = FALSE, breaks = 30, 
      xlim = xlim,
      ylim = ylim,
@@ -567,17 +574,18 @@ hist(R16_2deg.trunc, freq = FALSE,
 legend('right', legend = c('AR5', 'R16'), fill = c(ar5col, R16col), 
        bty = 'n', text.col = 'black', border = 'white')
 
-mtext('2 degrees', side = 3, line = -2, font = 2, col = 'black')
+mtext(expression(paste('2',degree, 'C short term warming')), side = 3, line = -1, font = 2, col = 'black')
 
 par(mar = c(5,5,0,1), las = 1)
 plot(RCP85_1_5deg$CO2_ppmv,rep(4.2, length(RCP85_1_5deg$CO2_ppmv)), 
      ylim = c(0.5,4.5),
      xlim = xlim,
      axes = FALSE,
-     xlab = expression(paste('CO'[2], ' concentration (ppm)')),
+     xlab = expression(paste('CO'[2], ' conc. (ppm) at time of first reaching 1.5',degree,'C')),
      ylab = '',
      col = 'black',
-     pch = rpch)
+     pch = rpch,
+     cex.lab = 0.9)
 
 points(RCP6_1_5deg$CO2_ppmv,rep(3.2, length(RCP6_1_5deg$CO2_ppmv)),
        col = 'black',
@@ -624,9 +632,7 @@ points(RCP26_1_5deg_CO2e,rep(0.8, length(RCP26_1_5deg_CO2e)),
        col = ecol,
        pch = rpch)
 
-
-
-axis(1, col = 'black')
+axis(1, col = 'black', at = seq(from = 300, to = 1100, by = 100))
 axis(2, labels = c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5'), at = 1:4, col = 'black')
 
 par(mar = c(5,2,0,4), las = 1)
@@ -634,12 +640,14 @@ plot(RCP85_2deg$CO2_ppmv, rep(4.2, length(RCP85_2deg$CO2_ppmv)),
      ylim = c(0.5,4.5),
      xlim = xlim,
      axes = FALSE,
-     xlab = expression(paste('CO'[2], ' concentration (ppm)')),
+     xlab = expression(paste('CO'[2], ' conc. (ppm) at time of first reaching 2',degree,'C')),
      ylab = '',
      pch = rpch,
-     col = 'black'
+     col = 'black',
+     cex.lab = 0.9
 )
-axis(1, col = 'black')
+#axis(1, col = 'black')
+axis(1, col = 'black', at = seq(from = 300, to = 1100, by = 100))
 points(RCP6_2deg$CO2_ppmv,rep(3.2, length(RCP6_2deg$CO2_ppmv)),
        pch = rpch,col = 'black')
 points(RCP45_2deg$CO2_ppmv,rep(2.2, length(RCP45_2deg$CO2_ppmv)),
@@ -677,6 +685,9 @@ legend('right', legend = c('CMIP5', 'CMIP5 & ISIMIP', expression(paste('CO'[2],'
        col = c('black', isicol,ecol), text.col = 'black', cex = 0.8, bty = 'n'
 )
 dev.off()
+
+
+
 
 print("RCP8.5 2 degrees")
 print(RCP85_2deg[order(RCP85_2deg$CO2_ppmv, decreasing = TRUE) , ])
