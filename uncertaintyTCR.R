@@ -15,7 +15,7 @@ tfunc  = function(tcr, c0=280, dT=2, dF2co2=3.44){
   # dT      ...  temperature change from baseline (degC)
   # dF2co2  ...  Forcing due to doubling of co2 (w/m^2)
   
-  out = c0 * exp( (dT * dF2co2) / (5.35 * tcr))
+  out = c0 * exp( (dT * dF2co2) / (4.96 * tcr))
   out
 }
 
@@ -549,14 +549,17 @@ hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30,
      col = ar5col,
      main = "",
      xlab = expression(paste("CO"[2]," conc. (ppm)")),
-     ylab = "Relative probability density",
+     ylab = "",
      axes = FALSE)
 
 hist(R16_1.5deg.trunc, freq = FALSE,
      breaks = 30, add = TRUE, col = R16col,
      fg = 'white'
 )
-mtext(expression(paste('1.5',degree, 'C short term warming')), side = 3, line = -1, font = 2, col = 'black')
+mtext(expression(paste('1.5',degree, 'C short term warming')), side = 3, line = -0.5, font = 2, col = 'black')
+axis(2, col = 'black', cex.axis = 0.8)
+mtext(side = 2, text = 'Relative probability density', 
+      line = 3.5, cex = 0.8, col = 'black', las = 0)
 
 par(mar = c(0,2,2,4), las = 1)
 hist(samp_2deg.trunc, freq = FALSE, breaks = 30, 
@@ -574,7 +577,7 @@ hist(R16_2deg.trunc, freq = FALSE,
 legend('right', legend = c('AR5', 'R16'), fill = c(ar5col, R16col), 
        bty = 'n', text.col = 'black', border = 'white')
 
-mtext(expression(paste('2',degree, 'C short term warming')), side = 3, line = -1, font = 2, col = 'black')
+mtext(expression(paste('2',degree, 'C short term warming')), side = 3, line = -0.5, font = 2, col = 'black')
 
 par(mar = c(5,5,0,1), las = 1)
 plot(RCP85_1_5deg$CO2_ppmv,rep(4.2, length(RCP85_1_5deg$CO2_ppmv)), 
