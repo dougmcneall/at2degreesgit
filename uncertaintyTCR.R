@@ -717,7 +717,7 @@ print(RCP6_1_5deg[order(RCP6_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
 print("RCP4.5 1.5 degrees")
 print(RCP45_1_5deg[order(RCP45_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
 
-print("RCP2.6.0 1.5 degrees")
+print("RCP2.6 1.5 degrees")
 print(RCP26_1_5deg[order(RCP26_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
 
 
