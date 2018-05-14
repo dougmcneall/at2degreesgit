@@ -225,7 +225,7 @@ dev.off()
 # when CMIP5 models cross warming thresholds
 # --------------------------------------------------------------------
 
-modco2 = read.csv("CMIP5_CO2_warming_summary - Sheet1.csv", sep = ',', strip.white = TRUE)
+modco2 = read.csv("CMIP5_CO2_warming_summary_Sheet1.csv", sep = ',', strip.white = TRUE)
 modlist = c('GFDL-ESM2M', 'NorESM1-M', 'MIROC-ESM-CHEM',
             'HadGEM2-ES', 'MIROC5', 'IPSL-CM5A-LR')
 
@@ -289,8 +289,8 @@ dev.off()
 # concentration at temperature thresholds with a rug plot
 # --------------------------------------------------------------------
 RCP_co2 = read.csv('RCP_CO2_concentration_HELIX_WP3.csv', sep = ',', strip.white = TRUE)
-ERF_total_anthro = read.csv('WG1AR5_AII.6.8_Total_anthropogenic_ERF_from_published_RCPs_(W_m–2).csv', sep = ',', strip.white = TRUE)
-ERF_co2 = read.csv('WG1AR5_TableAII.6.1_ERF_from_CO2_(W_m–2).csv', sep = ',', strip.white = TRUE)
+ERF_total_anthro = read.csv('WG1AR5_AII.6.8_Total_anthropogenic_ERF_from_published_RCPs_(W_m2).csv', sep = ',', strip.white = TRUE)
+ERF_co2 = read.csv('WG1AR5_TableAII.6.1_ERF_from_CO2_(W_m2).csv', sep = ',', strip.white = TRUE)
 #plot(ERF_co2$RCP26)
 passyears = read.csv('passyears.csv')
 
