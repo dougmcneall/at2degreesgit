@@ -133,7 +133,7 @@ hist(tcr_samp.trunc,  col = ar5col, xlim = c(0,6), freq = FALSE,
      xlab = 'TCR',
      main = 'Pr(TCR)')
 hist(atcrpdf.trunc, add = TRUE, col = R16col, freq = FALSE, breaks = breaks)
-legend('topright', legend = c('AR5', 'R16'), fill = c(ar5col, R16col),
+legend('topright', legend = c('CO2e AR5', 'CO2e R16'), fill = c(ar5col, R16col),
        bty = 'n')
 
 R16_2deg = tfunc(tcr = atcrpdf.trunc, c0 = 280, dT = 2, dF2co2=3.44)
@@ -191,32 +191,33 @@ legend('topright', legend = c('AR5', 'R16'), fill = c(ar5col, R16col),
 dev.off()
 
 
-pdf(width = 8, height = 4, file = 'co2_dist.pdf')
+pdf(width = 10, height = 5, file = 'co2_dist.pdf')
 par(mfrow = c(1,2))
 hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30, 
-     xlim = c(280,1200),
+     xlim = c(200,1400),
      col = ar5col,
-     main = "1.5 degrees",
-     xlab = expression(paste("CO"[2]," conc. (ppm)")),
+     main = "1.5 degrees short term warming",
+     xlab = expression(paste('CO'[2], 'e conc. (ppm) at time of first reaching 1.5',degree,'C')),
      ylab = "density")
 
 hist(R16_1.5deg.trunc, freq = FALSE,
      breaks = 30, add = TRUE, col = R16col
 )
-legend('topright', legend = c('AR5', 'R16'), fill = c(ar5col, R16col),
-       bty = 'n')
+legend('topright',legend = c(expression(paste('CO'[2],'e AR5')), expression(paste('CO'[2],'e R16'))), 
+        fill = c(ar5col, R16col), bty = 'n')
+
 
 hist(samp_2deg.trunc, freq = FALSE, breaks = 30, 
-     xlim = c(280,1200),
+     xlim = c(200,1400),
      col = ar5col,
-     main = "2 degrees",
-     xlab = expression(paste("CO"[2]," conc. (ppm)")),
+     main = "2 degrees short term warming",
+     xlab = expression(paste('CO'[2], 'e conc. (ppm) at time of first reaching 2',degree,'C')),
      ylab = "density"
 )
 hist(R16_2deg.trunc, freq = FALSE,
      breaks = 30, add = TRUE,col = R16col)
-legend('topright', legend = c('AR5', 'R16'), fill = c(ar5col, R16col), 
-       bty = 'n')
+legend('topright',legend = c(expression(paste('CO'[2],'e AR5')), expression(paste('CO'[2],'e R16'))), 
+   fill = c(ar5col, R16col), bty = 'n')
 dev.off()
 
 
@@ -382,7 +383,7 @@ hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30,
      col = ar5col,
      main = "",
      xlab = expression(paste("CO"[2]," conc. (ppm)")),
-     ylab = "Relative probability density",
+     ylab = '',
      axes = FALSE)
 
 hist(R16_1.5deg.trunc, freq = FALSE,
@@ -390,7 +391,6 @@ hist(R16_1.5deg.trunc, freq = FALSE,
      fg = 'white'
 )
 mtext(expression(paste('1.5',degree, 'C short term warming')), side = 3, line = -1, font = 2, col = 'black')
-axis(2, col = 'black', cex.axis = 0.8)
 mtext(side = 2, text = 'Relative probability density', 
       line = 3.5, cex = 0.8, col = 'black', las = 0)
 
@@ -408,7 +408,7 @@ hist(samp_2deg.trunc, freq = FALSE, breaks = 30,
 
 hist(R16_2deg.trunc, freq = FALSE,
      breaks = 30, add = TRUE,col = R16col)
-legend('right', legend = c('AR5', 'R16'), fill = c(ar5col, R16col), 
+legend('right', legend = c(expression(paste('CO'[2],'e AR5')), expression(paste('CO'[2],'e R16'))), fill = c(ar5col, R16col), 
        bty = 'n', text.col = 'black', border = 'white')
 
 mtext(expression(paste('2',degree, 'C short term warming')), side = 3, line = -1, font = 2, col = 'black')
@@ -528,8 +528,8 @@ points(RCP26_2deg_CO2e,rep(0.8, length(RCP26_2deg_CO2e)),
        col = ecol,
        pch = rpch)
 
-legend('right', legend = c('Emissions driven', 'CMIP5', 'CMIP5 & ISIMIP', expression(paste('CO'[2],'e'))), pch = rpch, 
-       col = c(edcol,'black', isicol,ecol), text.col = 'black', cex = 0.8, bty = 'n'
+legend('bottomright', legend = c(expression(paste('CO'[2],' Emissions driven')), expression(paste('CO'[2],' CMIP5 not ISIMIP')), expression(paste('CO'[2],' CMIP5 & ISIMIP')), expression(paste('CO'[2],'e all CMIP5'))), pch = rpch, 
+       col = c(edcol,'black', isicol,ecol), text.col = 'black', cex = 0.7, box.col = 'black'
        )
 dev.off()
 
@@ -577,7 +577,7 @@ hist(samp_2deg.trunc, freq = FALSE, breaks = 30,
 
 hist(R16_2deg.trunc, freq = FALSE,
      breaks = 30, add = TRUE,col = R16col)
-legend('right', legend = c('AR5', 'R16'), fill = c(ar5col, R16col), 
+legend('right', legend = c(expression(paste('CO'[2],'e AR5')), expression(paste('CO'[2],'e R16'))), fill = c(ar5col, R16col), 
        bty = 'n', text.col = 'black', border = 'white')
 
 mtext(expression(paste('2',degree, 'C short term warming')), side = 3, line = -0.5, font = 2, col = 'black')
@@ -687,8 +687,8 @@ points(RCP26_2deg_CO2e,rep(0.8, length(RCP26_2deg_CO2e)),
        col = ecol,
        pch = rpch)
 
-legend('right', legend = c('CMIP5', 'CMIP5 & ISIMIP', expression(paste('CO'[2],'e'))), pch = rpch, 
-       col = c('black', isicol,ecol), text.col = 'black', cex = 0.8, bty = 'n'
+legend('bottomright', legend = c(expression(paste('CO'[2],' CMIP5 not ISIMIP')), expression(paste('CO'[2],' CMIP5 & ISIMIP')), expression(paste('CO'[2],'e all CMIP5'))), pch = rpch, 
+       col = c('black', isicol,ecol), text.col = 'black', cex = 0.7, box.col = 'black'
 )
 dev.off()
 
