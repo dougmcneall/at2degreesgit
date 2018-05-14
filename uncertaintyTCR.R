@@ -196,7 +196,7 @@ par(mfrow = c(1,2))
 hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30, 
      xlim = c(200,1400),
      col = ar5col,
-     main = "1.5 degrees short term warming",
+     main = expression(paste("1.5",degree,"C short term warming")),
      xlab = expression(paste('CO'[2], 'e conc. (ppm) at time of first reaching 1.5',degree,'C')),
      ylab = "density")
 
@@ -210,7 +210,7 @@ legend('topright',legend = c(expression(paste('CO'[2],'e AR5')), expression(past
 hist(samp_2deg.trunc, freq = FALSE, breaks = 30, 
      xlim = c(200,1400),
      col = ar5col,
-     main = "2 degrees short term warming",
+     main = expression(paste("2",degree,"C short term warming")),
      xlab = expression(paste('CO'[2], 'e conc. (ppm) at time of first reaching 2',degree,'C')),
      ylab = "density"
 )
@@ -907,8 +907,30 @@ print(paste('AR5 1.5 degrees mode is ', Mode(samp_1.5deg) ))
 print(paste('R16 2 degrees mode is ', Mode(R16_2deg) ))
 print(paste('R16 1.5 degrees mode is ', Mode(R16_1.5deg) ))
 
+# Add Co2e to the tables of Co2 at the point of passing the threshold
 
 
+RCP26_combined_1_5_deg = cbind(RCP26_1_5deg, RCP26_1_5deg_CO2e)
+RCP26_combined_2deg = cbind(RCP26_2deg, RCP26_2deg_CO2e)
 
+RCP45_combined_1_5_deg = cbind(RCP45_1_5deg, RCP45_1_5deg_CO2e)
+RCP45_combined_2deg = cbind(RCP45_2deg, RCP45_2deg_CO2e)
 
+RCP60_combined_1_5_deg = cbind(RCP6_1_5deg, RCP60_1_5deg_CO2e)
+RCP60_combined_2deg = cbind(RCP6_2deg, RCP60_2deg_CO2e)
+
+RCP85_combined_1_5_deg = cbind(RCP85_1_5deg, RCP85_1_5deg_CO2e)
+RCP85_combined_2deg = cbind(RCP85_2deg, RCP85_2deg_CO2e)
+
+write.table(RCP26_combined_1_5_deg, file = 'RCP26_combined_1_5_deg.txt', quote = FALSE)
+write.table(RCP26_combined_2deg, file = 'RCP26_combined_2deg.txt', quote = FALSE)
+
+write.table(RCP45_combined_1_5_deg, file = 'RCP45_combined_1_5_deg.txt', quote = FALSE)
+write.table(RCP45_combined_2deg, file = 'RCP45_combined_2deg.txt', quote = FALSE)
+
+write.table(RCP60_combined_1_5_deg, file = 'RCP60_combined_1_5_deg.txt', quote = FALSE)
+write.table(RCP60_combined_2deg, file = 'RCP60_combined_2deg.txt', quote = FALSE)
+
+write.table(RCP85_combined_1_5_deg, file = 'RCP85_combined_1_5_deg.txt', quote = FALSE)
+write.table(RCP85_combined_2deg, file = 'RCP85_combined_2deg.txt', quote = FALSE)
 
