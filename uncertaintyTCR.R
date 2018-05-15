@@ -35,8 +35,8 @@ plot(tcr_range, c_at_2deg, type = 'l', lwd = lwd, ylim = c(0, 4000),
      ylab = expression(paste("CO"[2], " concentration (ppm)"))
      )
 lines(tcr_range, c_at_1.5deg, type = 'l', lwd = lwd, col = 'blue')
-text(1.2,1900, "at 2 degrees", col = 'black')
-text(0.9,400, "at 1.5 degrees", col = 'blue')
+text(1.5,1900, expression(paste('At time of passing 2', degree,'C')), col = 'black')
+text(1.3,260, expression(paste('At time of passing 1.5', degree,'C')), col = 'blue')
 dev.off()
 
 
