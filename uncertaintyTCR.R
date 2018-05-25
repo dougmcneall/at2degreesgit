@@ -190,6 +190,23 @@ legend('topright', legend = c('AR5', 'R16'), fill = c(ar5col, R16col),
        bty = 'n')
 dev.off()
 
+pdf(file = 'tcr_dist_sep.pdf', width = 5, height= 6)
+par(las = 1, mar = c(5,4,3,1), mfrow = c(2,1))
+breaks = seq(from = 0, to = 10, by = 0.25)
+hist(tcr_samp.trunc,  col = ar5col, xlim = c(0,5), freq = FALSE,
+     breaks = breaks,
+     xlab = expression(paste('TCR (', degree,'C)')),
+     main = 'AR5 TCR distribution'
+)
+#legend('topright', legend = c('AR5', 'R16'), fill = c(ar5col, R16col),
+#       bty = 'n')
+hist(atcrpdf.trunc, col = R16col, freq = FALSE, breaks = breaks,
+     xlim = c(0,5),
+     xlab = expression(paste('TCR (', degree,'C)')),
+     main = 'R16 TCR distribution')
+
+dev.off()
+
 
 pdf(width = 10, height = 5, file = 'co2_dist.pdf')
 par(mfrow = c(1,2))
@@ -219,6 +236,42 @@ hist(R16_2deg.trunc, freq = FALSE,
 legend('topright',legend = c(expression(paste('CO'[2],'e AR5')), expression(paste('CO'[2],'e R16'))), 
    fill = c(ar5col, R16col), bty = 'n')
 dev.off()
+
+pdf(width = 10, height = 7, file = 'co2_dist_sep.pdf')
+par(mfrow = c(2,2))
+hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30, 
+     xlim = c(200,1400),
+     col = ar5col,
+     main = expression(paste("1.5",degree,"C short term warming")),
+     xlab = expression(paste('CO'[2], 'e conc. (ppm) at time of first reaching 1.5',degree,'C')),
+     ylab = "density")
+
+hist(samp_2deg.trunc, freq = FALSE, breaks = 30, 
+     xlim = c(200,1400),
+     col = ar5col,
+     main = expression(paste("2",degree,"C short term warming")),
+     xlab = expression(paste('CO'[2], 'e conc. (ppm) at time of first reaching 2',degree,'C')),
+     ylab = "density"
+)
+legend('topright',legend = expression(paste('CO'[2],'e AR5')), 
+       fill = ar5col, bty = 'n')
+
+hist(R16_1.5deg.trunc, freq = FALSE,
+     xlim = c(200,1400),
+     main = expression(paste("1.5",degree,"C short term warming")),
+     xlab = expression(paste('CO'[2], 'e conc. (ppm) at time of first reaching 1.5',degree,'C')),
+     breaks = 30, add = FALSE, col = R16col
+)
+
+hist(R16_2deg.trunc, freq = FALSE,
+     xlim = c(200,1400),
+     main = expression(paste("2",degree,"C short term warming")),
+     xlab = expression(paste('CO'[2], 'e conc. (ppm) at time of first reaching 2',degree,'C')),
+     breaks = 30, add = FALSE,col = R16col)
+legend('topright',legend = expression(paste('CO'[2],'e R16')), 
+       fill =  R16col, bty = 'n')
+dev.off()
+
 
 
 # --------------------------------------------------------------------
