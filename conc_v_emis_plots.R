@@ -1,8 +1,15 @@
-
+# conc_v_emis_plots.R
+# ---------------------------------------------------------------------------------------
+# Comparing the CO2 concentrations in RCP and emissions-driven runs.
+# Figures S4 qnd  S5 for supplementary material of
+# "How much CO2 at 1.5 deg C and 2 deg C"  Betts & McNeall 2018, Nature Climate Change
+# Doug McNeall dougmcneall@gmail.com
+# ---------------------------------------------------------------------------------------
 
 emsi_v_conc_1_5 = read.csv('emis_v_conc_1_5.csv', head = TRUE)
 emsi_v_conc_2 = read.csv('emis_v_conc_2.csv', head = TRUE)
 
+# Figure S4
 pdf(file = 'emis_v_conc_1_5.pdf')
 par(las = 1)
 plot(emsi_v_conc_1_5[,2], emsi_v_conc_1_5[,3], pch = 19, col = 'tomato2',
@@ -18,6 +25,7 @@ text(emsi_v_conc_1_5[,2], emsi_v_conc_1_5[,3],
 
 dev.off()
 
+# Figure S5.
 pdf(file = 'emis_v_conc_2.pdf')
 par(las = 1)
 plot(emsi_v_conc_2[,2], emsi_v_conc_2[,3], pch = 19, col = 'tomato2',

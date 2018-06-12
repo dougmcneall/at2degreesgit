@@ -1,7 +1,12 @@
 # uncertaintyTCR.R
+# ---------------------------------------------------------------------------------------
 # Uncertainty analysis of Transient Climate Response (TCR)
 # What is the probability distribution of CO2 concentration
 # at a particular temperature change, given a distribution of TCR?
+# Main analysis code for
+# "How much CO2 at 1.5 deg C and 2 deg C"  Betts & McNeall 2018, Nature Climate Change
+# Doug McNeall dougmcneall@gmail.com
+# ---------------------------------------------------------------------------------------
 
 col2 = 'black'
 col1_5 = 'blue'
@@ -26,6 +31,7 @@ tcr_range = seq(from = 0.5, to = 3.5, by = 1/dx)
 c_at_2deg =  tfunc(tcr = tcr_range, c0 = 280, dT = 2, dF2co2=3.44)
 c_at_1.5deg =  tfunc(tcr = tcr_range, c0 = 280, dT = 1.5, dF2co2=3.44)
 
+# Figure S1.
 pdf(width = 5, height = 4, file = 'transfer.pdf')
 par(mar = c(4,5,1,1), bty = 'n', las = 1)
 lwd = 2
@@ -39,23 +45,9 @@ text(1.5,1900, expression(paste('At time of passing 2', degree,'C')), col = 'bla
 text(1.3,260, expression(paste('At time of passing 1.5', degree,'C')), col = 'blue')
 dev.off()
 
-
-
-pdf(width = 10, height = 6, file = 'probs.pdf')
-par(mfrow = c(2,2))
-plot(tcr_range, c_at_2deg, type = 'l', lwd = lwd, ylim = c(0, 4000),
-     main = "transfer function",
-     xlab = "TCR",
-     ylab = "CO2 conc.")
-lines(tcr_range, c_at_1.5deg, type = 'l', lwd = lwd, col = 'red')
-text(1,2100, "at 2 degrees", col = 'black')
-text(0.8,500, "at 1.5 degrees", col = 'red')
-
-# Very approximately, the TCR distribution is N(1.75, 0.5)
+# Very approximately, the TCR distribution is N(1.75, 0.45)
 # MC sample, and plug that into the transfer function
-# Still to do: pick a closer mean/sd (perhaps non normal?)
 tcrmean = 1.75
-#tcrsd = 0.5
 tcrsd = 0.45  # The final result is very sensitive to lower tail of tcr distribution
 
 # A plot of what the assumed tcr distribution looks like
@@ -82,16 +74,14 @@ hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30, col = 'lightgrey',
      ylab = "probability density")
 dev.off()
 
+# Table S1
 print('AR5 2 degrees')
 print(quantile(samp_2deg, probs = c(0.05, 0.5, 0.95)))
 
 print('AR5 1.5 degrees')
 print(quantile(samp_1.5deg, probs = c(0.05, 0.5, 0.95)))
 
-# Might do better with lower standard deviation
-# tcrdens = dnorm(tcr_range, mean = 1.75, sd = 0.45)
 tcrdens = dlnorm(tcr_range, meanlog = log(1.9), sdlog =0.4)
-#plot(tcr_range, tcrdens, type = 'l')
 sum(tcrdens)/dx
 sum((tcrdens/dx)[tcr_range<1])
 sum((tcrdens/dx)[tcr_range<3.3])
@@ -176,7 +166,7 @@ print(quantile(R16_2deg, probs = c(0.05, 0.5, 0.95)))
 print('R16 1.5 degrees')
 print(quantile(R16_1.5deg, probs = c(0.05, 0.5, 0.95)))
 
-
+# Figure S3.
 pdf(file = 'tcr_dist.pdf', width = 5, height= 3.5)
 par(las = 1, mar = c(5,4,1,1))
 breaks = seq(from = 0, to = 10, by = 0.25)
@@ -207,7 +197,7 @@ hist(atcrpdf.trunc, col = R16col, freq = FALSE, breaks = breaks,
 
 dev.off()
 
-
+# Figure S2.
 pdf(width = 10, height = 5, file = 'co2_dist.pdf')
 par(mfrow = c(1,2))
 hist(samp_1.5deg.trunc, freq = FALSE, breaks = 30, 
@@ -323,11 +313,8 @@ points(RCP26_2deg$CO2_ppmv,rep(1, length(RCP26_2deg$CO2_ppmv)))
 
 
 points(RCP85_1_5deg$CO2_ppmv,rep(3.7, length(RCP85_1_5deg$CO2_ppmv)), col = col1_5)
-
 points(RCP6_1_5deg$CO2_ppmv,rep(2.7, length(RCP6_1_5deg$CO2_ppmv)), col = col1_5)
-
 points(RCP45_1_5deg$CO2_ppmv,rep(1.7, length(RCP45_1_5deg$CO2_ppmv)), col = col1_5)
-
 points(RCP26_1_5deg$CO2_ppmv,rep(0.7, length(RCP26_1_5deg$CO2_ppmv)), col = col1_5)
 axis(1)
 axis(2, labels = c('RCP26', 'RCP45', 'RCP6', 'RCP85'), at = 1:4)
@@ -409,7 +396,6 @@ RCP26_2deg_CO2e = transfer_ppm(ppm=RCP26_2deg$CO2_ppmv,
 )
 
 
-
 rpch = '|'
 xlim = c(300, 1100)
 ylim = c(0, 0.007)
@@ -425,6 +411,7 @@ ecol = 'darkorange'
 edcol = 'pink1'
 
 # Plot CO2 pdfs with rug plots for CMIP5, ISIMIP *AND* emissions driven runs
+# Figure S6. 
 pdf(width = 7, height = 6, file = 'co2_dist_rug_emis.pdf')
 
 nf <- layout(matrix(c(1,2,3,4),2,2,byrow = TRUE), widths= c(4,4), heights= c(3.5,2.5), TRUE)
@@ -587,12 +574,9 @@ legend('bottomright', legend = c(expression(paste('CO'[2],' Emissions driven')),
 dev.off()
 
 
-
-
-
-
 # -----------------------------------------------------------------
 # Now the same plot, but without the emissions driven runs
+# Figure 1. in the paper.
 # -----------------------------------------------------------------
 pdf(width = 7, height = 6, file = 'co2_dist_rug.pdf')
 
@@ -745,8 +729,7 @@ legend('bottomright', legend = c(expression(paste('CO'[2],' CMIP5 not ISIMIP')),
 )
 dev.off()
 
-
-
+# Print The CO2 concentration for various models/RCPs
 
 print("RCP8.5 2 degrees")
 print(RCP85_2deg[order(RCP85_2deg$CO2_ppmv, decreasing = TRUE) , ])
@@ -775,17 +758,12 @@ print(RCP26_1_5deg[order(RCP26_1_5deg$CO2_ppmv, decreasing = TRUE) , ])
 
 
 
-
-
-
-
 # -----------------------------------------------------------------
 # How do CO2 and total Radiative forcing vary together?
 # -----------------------------------------------------------------
 
-
-
-
+# Effective Radiative forcing
+# Figure 2. in the paper
 pdf(width = 5, height = 6, file = 'erf.pdf')
 par(las = 1, mar = c(5,5,3,1))
 plot(erf$co2_ppm_RCP85, erf$tot_anthro_erf_RCP85,
@@ -814,40 +792,6 @@ legend('topleft',
        )
 
 dev.off()
-
-# # transfer between co2 and co2equivalent forcing
-# # # this code is the initial calculation
-# apco2_toterf = approx(x=erf$co2_ppm_RCP85,
-#                        y = erf$tot_anthro_erf_RCP85, xout = 600)
-# # 
-# aptot_anthro_co2ppm = approx(x=erf$co2_erf_RCP85,
-#                               y = erf$co2_ppm_RCP85, xout = apco2_toterf$y)
-# 
-# 
-# 
-# transfer_ppm(ppm=RCP85_2deg$CO2_ppmv,
-#              co2_ppm_RCP=erf$co2_ppm_RCP85,
-#              tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP85,
-#              co2_erf_RCP=erf$co2_erf_RCP85
-# )
-# 
-# transfer_ppm(ppm=600,
-#              co2_ppm_RCP=erf$co2_ppm_RCP85,
-#              tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP60,
-#              co2_erf_RCP=erf$co2_erf_RCP60
-# )
-# 
-# transfer_ppm(ppm=440,
-#              co2_ppm_RCP=erf$co2_ppm_RCP85,
-#              tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP45,
-#              co2_erf_RCP=erf$co2_erf_RCP45
-# )
-# 
-# transfer_ppm(ppm=400,
-#              co2_ppm_RCP=erf$co2_ppm_RCP26,
-#              tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP26,
-#              co2_erf_RCP=erf$co2_erf_RCP26
-# )
 
 perc = function(samp, thres){
   
