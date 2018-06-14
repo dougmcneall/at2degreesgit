@@ -17,7 +17,7 @@ These scripts will run in the R language for statistical computing https://www.r
 
 ## Authors
 
-* **Doug McNeall** (https://github.com/dougmcneall) did the analysis and wrote the code, based on an idea by Richard Betts.
+* **Doug McNeall** (https://github.com/dougmcneall) wrote the code, and did the analysis with Richard Betts, based on an initial idea by RB.
 
 
 ## License
