@@ -793,6 +793,118 @@ legend('topleft',
 
 dev.off()
 
+# -------------------------------------------------------------------
+# Version or erf diagram for Richard Betts' Carbon Brief article
+# -------------------------------------------------------------------
+
+
+RCP85_1_5deg_CO2e = transfer_ppm(ppm=RCP85_1_5deg$CO2_ppmv,
+                                 co2_ppm_RCP=erf$co2_ppm_RCP85,
+                                 tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP85,
+                                 co2_erf_RCP=erf$co2_erf_RCP85)
+
+test = transfer_ppm(ppm=c(600,650),
+                    co2_ppm_RCP=erf$co2_ppm_RCP85,
+                    tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP85,
+                    co2_erf_RCP=erf$co2_erf_RCP85)
+
+
+# Rich wants an inversion - a transfer from the CO2 ERF to the total ERF
+
+# here's the original function
+transfer_ppm = function(ppm,co2_ppm_RCP, tot_anthro_erf_RCP, co2_erf_RCP){
+  # transfer between co2 and co2e (co2 equivalent forcing)
+  co2_tot_erf = approx(x=co2_ppm_RCP, 
+                       y=tot_anthro_erf_RCP,
+                       xout = ppm)
+  
+  tot_anthro_co2ppm = approx(x=co2_erf_RCP,
+                             y = co2_ppm_RCP,
+                             xout = co2_tot_erf$y)
+  co2e = tot_anthro_co2ppm$y
+  co2e
+}
+
+transfer_ppm = function(ppm,co2_ppm_RCP, tot_anthro_erf_RCP, co2_erf_RCP){
+  # transfer between co2 and co2e (co2 equivalent forcing)
+  co2_tot_erf = approx(x=co2_ppm_RCP, 
+                       y=tot_anthro_erf_RCP,
+                       xout = ppm)
+  
+  tot_anthro_co2ppm = approx(x=co2_erf_RCP,
+                             y = co2_ppm_RCP,
+                             xout = co2_tot_erf$y)
+  co2e = tot_anthro_co2ppm$y
+  co2e
+}
+
+
+transfer_co2e = function(ppm, co2_ppm_RCP, tot_anthro_erf_RCP, co2_erf_RCP){
+  #ppm is the co2 concentration you want converted back to a co2e
+a = approx(x=co2_ppm_RCP, 
+           y=co2_erf_RCP,
+           xout = 765)
+
+b = approx(x = tot_anthro_erf_RCP,
+          y = co2_ppm_RCP,
+           xout = a$y)
+erf = b$x
+co2ppm = b$y
+
+return(list(erf = erf, co2ppm = co2ppm))
+}
+
+ppm_ex = transfer_co2e(ppm=765,
+                    co2_ppm_RCP=erf$co2_ppm_RCP85,
+                    tot_anthro_erf_RCP=erf$tot_anthro_erf_RCP85,
+                    co2_erf_RCP=erf$co2_erf_RCP85)
+
+
+
+# Effective Radiative forcing
+pdf(width = 5, height = 6, file = 'erf_CarbonBrief.pdf')
+#dev.new(width = 5, height = 6)
+par(las = 1, mar = c(5,5,3,1))
+plot(erf$co2_ppm_RCP85, erf$tot_anthro_erf_RCP85,
+     type = 'l', lwd = 2.5,
+     xlim = c(350,1000), ylim = c(1,9),
+     xlab = expression(paste('CO'[2], ' concentration (ppm)')),
+     ylab = expression(paste('Radiative forcing (Wm'^-2,')')),
+     bty = 'n'
+)
+lines(erf$co2_ppm_RCP85, erf$co2_erf_RCP85, lwd = 2.5, lty = 'dashed')
+
+lines(erf$co2_ppm_RCP60, erf$tot_anthro_erf_RCP60, lwd = 2.5, col = 'tomato2')
+lines(erf$co2_ppm_RCP60, erf$co2_erf_RCP60, lty = 'dashed',lwd = 2.5, col = 'tomato2')
+
+lines(erf$co2_ppm_RCP45, erf$tot_anthro_erf_RCP45, lwd = 2.5, col = 'dodgerblue')
+lines(erf$co2_ppm_RCP45, erf$co2_erf_RCP45, lwd = 2.5, lty = 'dashed', col = 'dodgerblue')
+
+lines(erf$co2_ppm_RCP26, erf$tot_anthro_erf_RCP26, lwd = 2.5 , col = 'orange')
+lines(erf$co2_ppm_RCP26, erf$co2_erf_RCP26, lwd = 2.5,lty = 'dashed', col = 'orange')
+
+abline(v = ppm_ex$co2ppm, lty = 'dashed', col = 'grey', lwd = 1.5)
+abline(v = 765, lty = 'dashed', col = 'grey', lwd = 1.5)
+abline(h = ppm_ex$erf, lty = 'dashed', col = 'grey', lwd = 1.5)
+
+text(x = ppm_ex$co2ppm, y = 1, labels =  paste0(round(ppm_ex$co2ppm, 0), ' ppm'), pos = 4, offset = 0.1, cex = 0.7)
+text(x = 765, y = 1, labels =  paste0(765,' ppm'), pos = 4, offset = 0.1, cex = 0.7)
+text(x = 400, y = ppm_ex$erf, labels = expression(paste(5.4, ' Wm'^-2)), pos = 3, offset = 0.2, cex = 0.7)
+
+legend('topleft',
+       c('RCP8.5', 'RCP6.0', 'RCP4.5', 'RCP2.6', 'total ERF', expression(paste('CO'[2],' ERF'))),
+       lty = c('solid', 'solid','solid', 'solid','solid', 'dashed'),
+       col = c('black', 'tomato2', 'dodgerblue', 'orange', 'black', 'black'),
+       bty = 'n',
+       lwd = 2, cex = 0.8
+)
+
+dev.off()
+
+# ---------------------------------------------------------------------
+
+
+
 perc = function(samp, thres){
   
   out = rep(NA, length(thres))
