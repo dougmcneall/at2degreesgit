@@ -263,6 +263,26 @@ legend('topright',legend = expression(paste('CO'[2],'e R16')),
 dev.off()
 
 
+# --------------------------------------------------------------------
+# A version of the co2_dist 1.5 Figure for R Betts' Carbon Brief article
+# --------------------------------------------------------------------
+
+pdf('co2_dist_CarbonBrief.pdf', width = 6, height = 4)
+par(mar = c(5,1,1,1))
+hist(R16_1.5deg.trunc, freq = FALSE,
+     axes = FALSE,
+     xlim = c(200,1400),
+     #main = expression(paste("1.5",degree,"C short term warming")),
+     main = '',
+     xlab = expression(paste('CO'[2], 'e concentration (ppm) at time of first reaching 1.5',degree,'C')),
+     breaks = 30, add = FALSE, col = R16col,
+     ylab = ''
+)
+axis(1)
+dev.off()
+
+
+
 
 # --------------------------------------------------------------------
 # Plot CO2 concentration,
@@ -891,19 +911,49 @@ text(x = ppm_ex$co2ppm, y = 1, labels =  paste0(round(ppm_ex$co2ppm, 0), ' ppm')
 text(x = 765, y = 1, labels =  paste0(765,' ppm'), pos = 4, offset = 0.1, cex = 0.7)
 text(x = 400, y = ppm_ex$erf, labels = expression(paste(5.4, ' Wm'^-2)), pos = 3, offset = 0.2, cex = 0.7)
 
-legend('topleft',
-       c('RCP8.5', 'RCP6.0', 'RCP4.5', 'RCP2.6', 'total ERF', expression(paste('CO'[2],' ERF'))),
-       lty = c('solid', 'solid','solid', 'solid','solid', 'dashed'),
-       col = c('black', 'tomato2', 'dodgerblue', 'orange', 'black', 'black'),
-       bty = 'n',
-       lwd = 2, cex = 0.8
+#legend('topleft',
+#       ncol = 2,
+#       #c('RCP8.5', 'RCP6.0', 'RCP4.5', 'RCP2.6', 'total ERF', expression(paste('CO'[2],' ERF'))),
+#       c('Total ERF', 'RCP8.5', 'RCP6.0', 'RCP4.5', 'RCP2.6',
+#         expression(paste('CO'[2],' ERF')),'RCP8.5', 'RCP6.0', 'RCP4.5', 'RCP2.6'),
+#       lty = c(NA, 'solid', 'solid','solid', 'solid',NA, 'dashed','dashed','dashed','dashed'),
+#       col = c(NA, 'black', 'tomato2', 'dodgerblue', 'orange',
+#               NA, 'black','tomato2', 'dodgerblue', 'orange'),
+#       bty = 'n',
+#       lwd = 2, cex = 0.8
+#)
+
+L = legend('topleft',
+       ncol = 2,
+       #c('RCP8.5', 'RCP6.0', 'RCP4.5', 'RCP2.6', 'total ERF', expression(paste('CO'[2],' ERF'))),
+     legend = rep(NA, 8),
+       lty = c('solid', 'solid','solid', 'solid', 'dashed','dashed','dashed','dashed'),
+       col = c( 'black', 'tomato2', 'dodgerblue', 'orange',
+                'black','tomato2', 'dodgerblue', 'orange'),
+    #   bty = 'n',
+     bg = 'white',
+    box.col = NA,
+      title = expression(paste('Total forcing   CO'[2],' only')),
+       lwd = 2, cex = 0.8,
+     x.intersp = 2.5,
+     title.adj = -0.2,
+     inset = 0.05,
+     seg.len = 3
 )
+legend(x = L$rect$left, y = L$rect$top, legend = c('RCP8.5', 'RCP6.0', 'RCP4.5', 'RCP2.6'), 
+       text.col = c( 'black', 'tomato2', 'dodgerblue', 'orange'),
+       col=NA, lty='solid', ncol=1, x.intersp = 9, cex = 0.8,
+       title = ' ',
+       #bty = 'n',
+       bg = NA,
+       box.col = NA,
+       inset = 0.05)
 
 dev.off()
 
 # ---------------------------------------------------------------------
 
-
+title =  expression(paste(' Total  CO'[2],' ERF'))
 
 perc = function(samp, thres){
   
