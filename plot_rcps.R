@@ -3,6 +3,7 @@
 # for all the models in the RCPs. Years 1850 - 2100
 
 
+
 col.rcp85 = 'red'
 col.rcp60 = 'orange'
 col.rcp45 = 'skyblue1'
@@ -803,8 +804,102 @@ dev.off()
 
 
 
+load_filter_rcp = function(datdir, rcpdir, years = 1850:2100){
+  
+  dirlist = dir(paste(datdir,rcpdir, sep = '/'))
+  nfiles = length(dirlist)
+  dat = matrix(NA, nrow = nfiles, ncol = length(years))
+  
+  for(i in 1:nfiles){
+    fn = dirlist[i]
+    tas = read.table(paste0(datdir,'/',rcpdir,'/',fn), skip = 9, head = FALSE)
+    
+    ensyears = tas[,1]
+    in.ix = which(years%in%ensyears)
+    
+    #print(nrow(tas))
+    dat[i,in.ix] = c(tas[,2], recursive = TRUE)
+  }
+  colnames(dat) = years
+  dat
+}
+
+## -----------------------------------------------------------------------------------------------
+# 20 year rolling mean version of the "all_rcps" plot
+## -----------------------------------------------------------------------------------------------
+# moving average function
+ma <- function(x, n = 20){filter(x, rep(1 / n, n), sides = 2)}
+
+
+#RCP26_tas = load_rcp(datdir = 'knmi_climate_explorer', rcpdir = 'RCP26')
+ix = which(years %in%1981:2010) # corresponding to 1861:1880
+
+RCP26_tas.modern.anom = anomalize_ensemble(RCP26_tas, ix = ix)
+RCP26_tas.modern.anom.filtered  <-apply(RCP26_tas.modern.anom, 1, ma) + 0.61
+
+RCP45_tas.modern.anom = anomalize_ensemble(RCP45_tas, ix = ix)
+RCP45_tas.modern.anom.filtered  <-apply(RCP45_tas.modern.anom, 1, ma) + 0.61
+
+RCP60_tas.modern.anom = anomalize_ensemble(RCP60_tas, ix = ix)
+RCP60_tas.modern.anom.filtered  <-apply(RCP60_tas.modern.anom, 1, ma) + 0.61
+
+RCP85_tas.modern.anom = anomalize_ensemble(RCP85_tas, ix = ix)
+RCP85_tas.modern.anom.filtered  <-apply(RCP85_tas.modern.anom, 1, ma) + 0.61
+
+
+matplot(years, t(RCP26_tas.modern.anom), type = 'l', col = 'grey', lty = 'solid')
+matlines(years, test, type = 'l', col = 'black', lty = 'solid')
+
+# Plot all RCPs on the same plot
+pdf(file = 'all_rcps_smoothed.pdf', width = 8, height = 7)
+par(las = 1, mar = c(5,5,2,1))
+
+lwd = 3
+xlim = c(1960, 2100)
+ylim = c(280,940)
+matplot(years, RCP85_tas.modern.anom.filtered, type = 'l', lty = 'solid', lwd = 1.2,
+        col=col.rcp85,
+        xlim = xlim,
+        axes = FALSE, bty = 'n',
+        ylab = expression(paste('Global mean temperature anomaly (',degree,'C)'))
+)
+matlines(years, RCP60_tas.modern.anom.filtered, type = 'l',lty = 'solid', lwd = 1.2, col=col.rcp60)
+matlines(years, RCP45_tas.modern.anom.filtered, type = 'l',lty = 'solid', lwd = 1.2, col=col.rcp45)
+matlines(years, RCP26_tas.modern.anom.filtered, type = 'l',lty = 'solid', lwd = 1.2, col=col.rcp26)
+abline(h = 1.5, col = 'black', lty = 'dotted', lwd = 2)
+abline(h = 2, col = 'black', lty = 'dashed', lwd = 2)
+text(1960, 1.7, labels = expression(paste('1.5',degree,'C')), 
+     cex = 0.8, col = 'black',
+     pos = 2)
+text(1960, 2.2, labels = expression(paste('2',degree,'C')), cex = 0.8,
+     col= 'black',
+     pos = 2)
+axis(1)
+axis(2)
+legend('top', legend = rev(c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5')),
+       col = rev(c(col.rcp26, col.rcp45, col.rcp60, col.rcp85)), 
+       text.col = rev(c(col.rcp26, col.rcp45, col.rcp60, col.rcp85)),
+       lty = 'solid', 
+       lwd = 2, bty = 'n')
+
+dev.off()
 
 
 
+par(mar = c(5,5,0,1))
+plot(years, rcp85conc, type = 'l', col = col.rcp85, lwd = lwd,
+     xlim = xlim,
+     ylim = ylim,
+     axes = FALSE, bty = 'n',
+     xlab = 'Year',
+     ylab = expression(paste('CO'[2],' conc. (ppm)'))
+)
+lines(years, rcp60conc, type = 'l', col = col.rcp60, lwd = lwd)
+lines(years, rcp45conc, type = 'l', col = col.rcp45, lwd = lwd)
+lines(years, rcp26conc, type = 'l', col = col.rcp26, lwd = lwd)
+axis(1)
+axis(2)
+
+dev.off()
 
 
