@@ -922,6 +922,8 @@ text(1980, 1.6, labels = expression(paste('1.5',degree,'C')),
 text(1980, 2.1, labels = expression(paste('2',degree,'C')), cex = 0.8,
      col= 'black',
      pos = 2)
+
+segments(x0 = 2020, y0 = (1.15 - 0.1), x1 = 2020, y1 = (1.15 + 0.1), col = 'black', lwd = 2)
 axis(1)
 axis(2)
 legend('top', legend = rev(c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5')),
