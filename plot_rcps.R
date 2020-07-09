@@ -847,31 +847,34 @@ RCP85_tas.modern.anom = anomalize_ensemble(RCP85_tas, ix = ix)
 RCP85_tas.modern.anom.filtered  <-apply(RCP85_tas.modern.anom, 1, ma) + 0.61
 
 
-matplot(years, t(RCP26_tas.modern.anom), type = 'l', col = 'grey', lty = 'solid')
-matlines(years, test, type = 'l', col = 'black', lty = 'solid')
+#matplot(years, t(RCP26_tas.modern.anom), type = 'l', col = 'grey', lty = 'solid')
+#matlines(years, test, type = 'l', col = 'black', lty = 'solid')
+
+xlim = c(1960, 2080)
+ylim = c(-0.5, 5.5)
 
 # Plot all RCPs on the same plot
-pdf(file = 'all_rcps_smoothed.pdf', width = 8, height = 7)
-par(las = 1, mar = c(5,5,2,1))
+pdf(file = 'all_rcps_smoothed.pdf', width = 7, height = 6)
+par(las = 1, mar = c(3,5,2,1))
 
-lwd = 3
-xlim = c(1960, 2100)
-ylim = c(280,940)
-matplot(years, RCP85_tas.modern.anom.filtered, type = 'l', lty = 'solid', lwd = 1.2,
+
+matplot(years, RCP85_tas.modern.anom.filtered, type = 'l', lty = 'solid', lwd = 1.5,
         col=col.rcp85,
         xlim = xlim,
+        ylim = ylim,
         axes = FALSE, bty = 'n',
+        xlab = '',
         ylab = expression(paste('Global mean temperature anomaly (',degree,'C)'))
 )
-matlines(years, RCP60_tas.modern.anom.filtered, type = 'l',lty = 'solid', lwd = 1.2, col=col.rcp60)
-matlines(years, RCP45_tas.modern.anom.filtered, type = 'l',lty = 'solid', lwd = 1.2, col=col.rcp45)
-matlines(years, RCP26_tas.modern.anom.filtered, type = 'l',lty = 'solid', lwd = 1.2, col=col.rcp26)
+matlines(years, RCP60_tas.modern.anom.filtered, type = 'l',lty = 'solid', lwd = 1.5, col=col.rcp60)
+matlines(years, RCP45_tas.modern.anom.filtered, type = 'l',lty = 'solid', lwd = 1.5, col=col.rcp45)
+matlines(years, RCP26_tas.modern.anom.filtered, type = 'l',lty = 'solid', lwd = 1.5, col=col.rcp26)
 abline(h = 1.5, col = 'black', lty = 'dotted', lwd = 2)
 abline(h = 2, col = 'black', lty = 'dashed', lwd = 2)
-text(1960, 1.7, labels = expression(paste('1.5',degree,'C')), 
+text(1980, 1.6, labels = expression(paste('1.5',degree,'C')), 
      cex = 0.8, col = 'black',
      pos = 2)
-text(1960, 2.2, labels = expression(paste('2',degree,'C')), cex = 0.8,
+text(1980, 2.1, labels = expression(paste('2',degree,'C')), cex = 0.8,
      col= 'black',
      pos = 2)
 axis(1)
@@ -885,20 +888,47 @@ legend('top', legend = rev(c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5')),
 dev.off()
 
 
+# The "Global Warming Index" is currently 1.15 degC. How many of the models are within this now?
+  
+ix.2020 = which(years ==2020) # corresponding to 1861:1880
 
-par(mar = c(5,5,0,1))
-plot(years, rcp85conc, type = 'l', col = col.rcp85, lwd = lwd,
-     xlim = xlim,
-     ylim = ylim,
-     axes = FALSE, bty = 'n',
-     xlab = 'Year',
-     ylab = expression(paste('CO'[2],' conc. (ppm)'))
+ix.plot.RCP26 <- which(abs(RCP26_tas.modern.anom.filtered[ix.2020, ] - 1.15) < 0.1)
+ix.plot.RCP45 <- which(abs(RCP45_tas.modern.anom.filtered[ix.2020, ] - 1.15) < 0.1)
+ix.plot.RCP60 <- which(abs(RCP60_tas.modern.anom.filtered[ix.2020, ] - 1.15) < 0.1)
+ix.plot.RCP85 <- which(abs(RCP85_tas.modern.anom.filtered[ix.2020, ] - 1.15) < 0.1)
+  
+
+# Plot all RCPs on the same plot
+pdf(file = 'all_rcps_smoothed_gwi.pdf', width = 7, height = 6)
+par(las = 1, mar = c(3,5,2,1))
+
+lwd = 3
+matplot(years, RCP85_tas.modern.anom.filtered[, ix.plot.RCP85], type = 'l', lty = 'solid', lwd = 1.5,
+        col=col.rcp85,
+        xlim = xlim,
+        ylim = ylim,
+        axes = FALSE, bty = 'n',
+        xlab = '',
+        ylab = expression(paste('Global mean temperature anomaly (',degree,'C)'))
 )
-lines(years, rcp60conc, type = 'l', col = col.rcp60, lwd = lwd)
-lines(years, rcp45conc, type = 'l', col = col.rcp45, lwd = lwd)
-lines(years, rcp26conc, type = 'l', col = col.rcp26, lwd = lwd)
+matlines(years, RCP60_tas.modern.anom.filtered[ ,ix.plot.RCP60], type = 'l',lty = 'solid', lwd = 1.5, col=col.rcp60)
+matlines(years, RCP45_tas.modern.anom.filtered[, ix.plot.RCP45], type = 'l',lty = 'solid', lwd = 1.5, col=col.rcp45)
+matlines(years, RCP26_tas.modern.anom.filtered[, ix.plot.RCP26], type = 'l',lty = 'solid', lwd = 1.5, col=col.rcp26)
+abline(h = 1.5, col = 'black', lty = 'dotted', lwd = 2)
+abline(h = 2, col = 'black', lty = 'dashed', lwd = 2)
+text(1980, 1.6, labels = expression(paste('1.5',degree,'C')), 
+     cex = 0.8, col = 'black',
+     pos = 2)
+text(1980, 2.1, labels = expression(paste('2',degree,'C')), cex = 0.8,
+     col= 'black',
+     pos = 2)
 axis(1)
 axis(2)
+legend('top', legend = rev(c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5')),
+       col = rev(c(col.rcp26, col.rcp45, col.rcp60, col.rcp85)), 
+       text.col = rev(c(col.rcp26, col.rcp45, col.rcp60, col.rcp85)),
+       lty = 'solid', 
+       lwd = 2, bty = 'n')
 
 dev.off()
 
