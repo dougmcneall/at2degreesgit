@@ -923,7 +923,53 @@ text(1980, 2.1, labels = expression(paste('2',degree,'C')), cex = 0.8,
      col= 'black',
      pos = 2)
 
-segments(x0 = 2020, y0 = (1.15 - 0.1), x1 = 2020, y1 = (1.15 + 0.1), col = 'black', lwd = 2)
+arrows(x0 = 2020, y0 = (1.15 - 0.1), x1 = 2020, y1 = (1.15 + 0.1), col = 'black', lwd = 2, code = 3, length = 0.1,angle = 90)
+axis(1)
+axis(2)
+legend('top', legend = rev(c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5')),
+       col = rev(c(col.rcp26, col.rcp45, col.rcp60, col.rcp85)), 
+       text.col = rev(c(col.rcp26, col.rcp45, col.rcp60, col.rcp85)),
+       lty = 'solid', 
+       lwd = 2, bty = 'n')
+text(2015, 0.65, labels = expression(paste("Global warming Index 1.15 \u00B1 0.1", degree,'C')), pos = 4 )
+
+dev.off()
+
+# Smooth the ensemble with the original baseline (1861-1880)
+
+RCP26_tas.anom.filtered  <-apply(RCP26_tas.anom, 1, ma)
+RCP45_tas.anom.filtered  <-apply(RCP45_tas.anom, 1, ma)
+RCP60_tas.anom.filtered  <-apply(RCP60_tas.anom, 1, ma)
+RCP85_tas.anom.filtered  <-apply(RCP85_tas.anom, 1, ma)
+
+
+xlim = c(1960, 2080)
+ylim = c(-0.5, 5.5)
+
+# Plot all RCPs on the same plot
+pdf(file = 'all_rcps_smoothed_1890_baseline.pdf', width = 7, height = 6)
+par(las = 1, mar = c(3,5,2,1))
+
+
+matplot(years, RCP85_tas.anom.filtered, type = 'l', lty = 'solid', lwd = 1.5,
+        col=col.rcp85,
+        xlim = xlim,
+        ylim = ylim,
+        axes = FALSE, bty = 'n',
+        xlab = '',
+        ylab = expression(paste('Global mean temperature anomaly (',degree,'C)'))
+)
+matlines(years, RCP60_tas.anom.filtered, type = 'l',lty = 'solid', lwd = 1.5, col=col.rcp60)
+matlines(years, RCP45_tas.anom.filtered, type = 'l',lty = 'solid', lwd = 1.5, col=col.rcp45)
+matlines(years, RCP26_tas.anom.filtered, type = 'l',lty = 'solid', lwd = 1.5, col=col.rcp26)
+abline(h = 1.5, col = 'black', lty = 'dotted', lwd = 2)
+abline(h = 2, col = 'black', lty = 'dashed', lwd = 2)
+text(1980, 1.6, labels = expression(paste('1.5',degree,'C')), 
+     cex = 0.8, col = 'black',
+     pos = 2)
+text(1980, 2.1, labels = expression(paste('2',degree,'C')), cex = 0.8,
+     col= 'black',
+     pos = 2)
 axis(1)
 axis(2)
 legend('top', legend = rev(c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5')),
@@ -933,5 +979,50 @@ legend('top', legend = rev(c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5')),
        lwd = 2, bty = 'n')
 
 dev.off()
+
+
+
+# which of the old baseline runs has Global warming Index between 1.0 and 1.4 degc (April 2020)?
+ix.plot.RCP26 <- which(RCP26_tas.anom.filtered[ix.2020, ] > 1.0 & RCP26_tas.anom.filtered[ix.2020, ] < 1.4)
+ix.plot.RCP45 <- which(RCP45_tas.anom.filtered[ix.2020, ] > 1.0 & RCP45_tas.anom.filtered[ix.2020, ] < 1.4)
+ix.plot.RCP60 <- which(RCP60_tas.anom.filtered[ix.2020, ] > 1.0 & RCP60_tas.anom.filtered[ix.2020, ] < 1.4)
+ix.plot.RCP85 <- which(RCP85_tas.anom.filtered[ix.2020, ] > 1.0 & RCP85_tas.anom.filtered[ix.2020, ] < 1.4)
+
+pdf(file = 'all_rcps_smoothed_gwi_1890_baseline.pdf', width = 7, height = 6)
+par(las = 1, mar = c(3,5,2,1))
+
+lwd = 3
+matplot(years, RCP85_tas.anom.filtered[, ix.plot.RCP85], type = 'l', lty = 'solid', lwd = 1.5,
+        col=col.rcp85,
+        xlim = xlim,
+        ylim = ylim,
+        axes = FALSE, bty = 'n',
+        xlab = '',
+        ylab = expression(paste('Global mean temperature anomaly (',degree,'C)'))
+)
+matlines(years, RCP60_tas.anom.filtered[ ,ix.plot.RCP60], type = 'l',lty = 'solid', lwd = 1.5, col=col.rcp60)
+matlines(years, RCP45_tas.anom.filtered[, ix.plot.RCP45], type = 'l',lty = 'solid', lwd = 1.5, col=col.rcp45)
+matlines(years, RCP26_tas.anom.filtered[, ix.plot.RCP26], type = 'l',lty = 'solid', lwd = 1.5, col=col.rcp26)
+abline(h = 1.5, col = 'black', lty = 'dotted', lwd = 2)
+abline(h = 2, col = 'black', lty = 'dashed', lwd = 2)
+text(1980, 1.6, labels = expression(paste('1.5',degree,'C')), 
+     cex = 0.8, col = 'black',
+     pos = 2)
+text(1980, 2.1, labels = expression(paste('2',degree,'C')), cex = 0.8,
+     col= 'black',
+     pos = 2)
+
+arrows(x0 = 2020, y0 = (1.0), x1 = 2020, y1 = (1.4), col = 'black', lwd = 2, code = 3, length = 0.1,angle = 90 )
+axis(1)
+axis(2)
+legend('top', legend = rev(c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5')),
+       col = rev(c(col.rcp26, col.rcp45, col.rcp60, col.rcp85)), 
+       text.col = rev(c(col.rcp26, col.rcp45, col.rcp60, col.rcp85)),
+       lty = 'solid', 
+       lwd = 2, bty = 'n')
+text(2015, 0.65, labels = expression(paste("Global warming Index 1 - 1.4", degree,'C')), pos = 4 )
+
+dev.off()
+
 
 
