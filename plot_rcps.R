@@ -1024,5 +1024,5 @@ text(2015, 0.65, labels = expression(paste("Global warming Index 1 - 1.4", degre
 
 dev.off()
 
-
+  
 
