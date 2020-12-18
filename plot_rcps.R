@@ -1050,9 +1050,8 @@ matplot(years, t(RCP45_tas.anom.modernbaseline),lty = 'solid',
         ylab = expression(paste('Global mean temperature anomaly from 1850-1900 (',degree,'C)')),
         type = 'n'
 )
-#matlines(years, t(RCP60_tas.anom), type = 'l',lty = 'solid', col=col.rcp60)
+
 matlines(years, t(RCP45_tas.anom.modernbaseline), type = 'l',lty = 'solid', col=col.rcp45)
-#matlines(years, t(RCP26_tas.anom), type = 'l',lty = 'solid', col=col.rcp26)
 abline(h = 1.5, col = 'black', lty = 'dotted', lwd = 2)
 abline(h = 2, col = 'black', lty = 'dashed', lwd = 2)
 text(1920, 1.7, labels = expression(paste('1.5',degree,'C')), 
@@ -1071,29 +1070,56 @@ legend('top', legend ='RCP4.5',
        lwd = 2, bty = 'n')
 
 
-#legend('top', legend = rev(c('RCP2.6', 'RCP4.5', 'RCP6.0', 'RCP8.5')),
-#       col = rev(c(col.rcp26, col.rcp45, col.rcp60, col.rcp85)), 
-#       text.col = rev(c(col.rcp26, col.rcp45, col.rcp60, col.rcp85)),
-#       lty = 'solid', 
-#       lwd = 2, bty = 'n')
 
-# par(mar = c(5,5,0,1))
-# plot(years, rcp85conc, type = 'n', col = col.rcp85, lwd = lwd,
-#      xlim = xlim,
-#      ylim = ylim,
-#      axes = FALSE, bty = 'n',
-#      xlab = 'Year',
-#      ylab = expression(paste('CO'[2],' conc. (ppm)'))
-# )
-#lines(years, rcp60conc, type = 'l', col = col.rcp60, lwd = lwd)
-#lines(years, rcp45conc, type = 'l', col = col.rcp45, lwd = lwd)
-#lines(years, rcp26conc, type = 'l', col = col.rcp26, lwd = lwd)
-
-#axis(1)  
-#axis(2)
 
 dev.off()
 
 
-  
+
+lowess_ensemble <- function(X, ...){
+  # Quick function to apply lowess smoothing to a matrix
+  out <- matrix(nrow = nrow(X), ncol = ncol(X))
+  for(i in 1:nrow(X)){
+    x <- X[i, ]
+    x_lowess <- lowess(x, ...)$y
+    out[i, ] <- x_lowess
+  }
+  out
+}
+
+RCP45_tas.anom.modernbaseline.lowess <- lowess_ensemble(RCP45_tas.anom.modernbaseline, f = 0.1)
+
+pdf(file = 'rcp45_modernbaseline_lowess.pdf', width = 7, height = 5)
+#dev.new(width = 7, height = 4)
+par(las = 1, mar = c(5.1, 6.1,3.1,1.1))
+
+xlim = c(1900, 2100)
+matplot(years, t(RCP45_tas.anom.modernbaseline),lty = 'solid',
+        col=col.rcp45,
+        xlim = xlim,
+        axes = FALSE, bty = 'n',
+        ylab = expression(paste('Global mean temperature\nanomaly from 1850-1900 (',degree,'C)')),
+        type = 'n'
+)
+
+matlines(years, t(RCP45_tas.anom.modernbaseline.lowess), type = 'l',lty = 'solid', col=col.rcp45)
+#matlines(years, t(RCP45_tas.anom.modernbaseline.lowess), type = 'l',lty = 'solid', col='grey')
+abline(h = 1.5, col = 'black', lty = 'dotted', lwd = 1)
+abline(h = 2, col = 'black', lty = 'dashed', lwd = 1)
+text(1915, 1.65, labels = expression(paste('1.5',degree,'C')), 
+     cex = 0.8, col = 'black',
+     pos = 2)
+text(1915, 2.15, labels = expression(paste('2',degree,'C')), cex = 0.8,
+     col= 'black',
+     pos = 2)
+axis(1)
+axis(2)
+
+legend('topleft', legend ='RCP4.5 (smoothed)',
+       col = col.rcp45,
+       text.col = col.rcp45,
+       lty = 'solid', 
+       lwd = 2, bty = 'n')
+
+dev.off()
 
