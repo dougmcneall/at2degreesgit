@@ -1047,7 +1047,7 @@ matplot(years, t(RCP45_tas.anom.modernbaseline),lty = 'solid',
         col=col.rcp45,
         xlim = xlim,
         axes = FALSE, bty = 'n',
-        ylab = expression(paste('Global mean temperature\nanomaly from 1981-2010 (',degree,'C)')),
+        ylab = expression(paste('Global mean temperature anomaly from 1850-1900 (',degree,'C)')),
         type = 'n'
 )
 #matlines(years, t(RCP60_tas.anom), type = 'l',lty = 'solid', col=col.rcp60)
