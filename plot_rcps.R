@@ -1032,12 +1032,14 @@ dev.off()
 #
 # --------------------------------------------------------------------------------------------
 
+# Add a temperature offset of 0.61 degrees (warming since preindustrial)
+tempoffset <- 0.61 
 
-RCP45_tas.anom.modernbaseline = anomalize_ensemble(RCP45_tas, ix = which(years %in%1981:2010))
+RCP45_tas.anom.modernbaseline = anomalize_ensemble(RCP45_tas, ix = which(years %in%1981:2010)) + tempoffset
 
 pdf(file = 'rcp45_modernbaseline.pdf', width = 7, height = 5)
 #dev.new(width = 7, height = 4)
-par(las = 1, mar = 5.1, 6.1,4.1,2.1)
+par(las = 1, mar = c(5.1, 6.1,3.1,1.1))
 
 lwd = 3
 xlim = c(1900, 2100)
@@ -1087,7 +1089,7 @@ legend('top', legend ='RCP4.5',
 #lines(years, rcp45conc, type = 'l', col = col.rcp45, lwd = lwd)
 #lines(years, rcp26conc, type = 'l', col = col.rcp26, lwd = lwd)
 
-#axis(1)
+#axis(1)  
 #axis(2)
 
 dev.off()
