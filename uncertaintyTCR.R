@@ -10,7 +10,7 @@
 
 col2 = 'black'
 col1_5 = 'blue'
-
+  
 tfunc  = function(tcr, c0=280, dT=2, dF2co2=3.44){
   # Transfer function that takes in TCR and outputs
   # a co2 concentration at a given temperature change

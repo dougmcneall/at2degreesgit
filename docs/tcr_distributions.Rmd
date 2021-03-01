@@ -1,0 +1,284 @@
+---
+title: "tcr_distributions"
+author: "Doug McNeall"
+date: "2/17/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Possible distributions for TCR
+
+There are a number of estimates for the pdf of TCR. Here are some possible fits to the stated distributions.
+
+
+### AR5 (assessed range)
+
+"likley" range (66% probability)
+
+1 - 2.5 deg C
+
+Also "positive" and "extremely unlikely  (95% probability) above 3"
+
+I interpret this as
+
+quantile   0%  22%     78%    97.5%
+tcr        0    1      2.5     3
+
+But it's possible to interpret that upper quantile as 95%. I'll update this as I find out. (possible inconsistancy)
+
+### CMIP5 models
+AR5 Box 12.2 states:
+
+"5 to 95% range of CMIP5 (1.2°C to 2.4°C; see Table 9.5), is positive and extremely unlikely greater than 3°C."
+
+quantile   0%    5%    95%      97.5%
+tcr        0    1.2     2.5     3
+
+
+### Schurer eta al (2018)
+
+Multimodel mean with increased variance for model uncertainty
+
+quantile 5%    50%   95%
+tcr      1.2   1.7   2.4
+
+### Sherwood et al (2020)
+
+Likely (66% probability) range
+
+quantile     22%     50%    78%
+tcr           1.5    1.8    2.2
+
+
+
+
+```{r}
+dx = 100
+tcr_range = seq(from = 0, to = 5, by = 1/dx)
+
+```
+
+```{r}
+# Very approximately, the TCR distribution is N(1.75, 0.5)
+# MC sample, and plug that into the transfer function
+# Still to do: pick a closer mean/sd (perhaps non normal?)
+tcrmean = 1.75
+#tcrsd = 0.5 # incorrectly used in the paper.
+tcrsd = 0.97  # The final result is very sensitive to lower tail of tcr distribution
+
+# A plot of what the assumed tcr distribution looks like
+tcrdens = dnorm(tcr_range, mean = tcrmean, sd = tcrsd)
+plot(tcr_range, tcrdens, type = 'l', lwd = 2, main = "pr(TCR)", xlab = "TCR", ylab = "Probability density" )
+```
+
+
+```{r}
+# A plot of what the assumed tcr distribution looks like
+tcrdens = dlnorm(tcr_range, meanlog = tcrmean, sdlog = 2)
+plot(tcr_range, tcrdens, type = 'l', lwd = 2, main = "pr(TCR)", xlab = "TCR", ylab = "Probability density" )
+
+
+```
+
+
+
+
+
+## Try different distributions
+
+```{r}
+
+gdens <- dgamma(x = tcr_range, shape = 5, rate = 3)
+
+plot(tcr_range, gdens, type = 'l', lwd = 2, main = "pr(TCR)", xlab = "TCR", ylab = "Probability density" )
+
+
+
+
+```
+
+
+
+```{r}
+
+atcrpdf = as.numeric(readLines("../richardson/atcrpdf.txt"))
+atcrpdf.trunc = atcrpdf[atcrpdf<12 & atcrpdf >0]
+```
+
+
+
+```{r}
+
+library(fitdistrplus)
+
+start.gamma <- list(shape = 5, rate = 3)
+fit.gamma <- fitdist(atcrpdf.trunc, distr = "gamma", method = "mle", start = start.gamma)
+summary(fit.gamma)
+
+```
+
+```{r}
+
+plot(fit.gamma)
+#ist(atcrpdf.trunc)
+
+```
+
+
+```{r}
+# lognormal?
+# A lognormal distribution seems to fit the 
+
+fit.lnorm <- fitdist(atcrpdf.trunc, distr = "lnorm", method = "mle")
+summary(fit.lnorm)
+
+plot(fit.lnorm)
+
+exp(fit.lnorm$estimate)
+
+```
+
+```{r}
+### CMIP5 models
+# AR5 Box 12.2 states:
+# "5 to 95% range of CMIP5 (1.2°C to 2.4°C; see Table 9.5), is positive and extremely unlikely greater than 3°C."
+#quantile   0%    5%    95%      97.5%
+#tcr        0    1.2     2.5     3
+
+
+### Schurer eta al (2018)
+
+#Multimodel mean with increased variance for model uncertainty
+#quantile 5%    50%   95%
+#tcr      1.2   1.7   2.4
+
+### Sherwood et al (2020)
+#Likely (66% probability) range
+#quantile     22%     50%    78%
+#tcr           1.5    1.8    2.2
+
+library(rriskDistributions)
+
+# Quantiles and probabilities from the various estimates
+
+# AR5 assessed likely
+p_ar5 <- c(0.22, 0.78, 0.975)
+q_ar5 <- c(1, 2.5, 3)
+
+# CMIP5 models
+p_cmip5 <- c(0.05, 0.95, 0.975)
+q_cmip5 <- c(1.2, 2.5, 3)
+
+p_schurer <- c(0.05,0.50, 0.95)
+q_schurer <- c(1.2, 1.7, 2.4)
+
+p_sherwood <- c(0.22,0.50, 0.78)
+q_sherwood <- c(1.5, 1.8, 2.2)
+
+p_richardson <- c(0.05, 0.50, 0.95)
+q_richardson <- quantile(atcrpdf.trunc, p_richardson) # check these
+
+# Calculate the parameters of a lognormal distribution that would fit those parameters
+
+lnpar_ar5 <- get.lnorm.par(p = p_ar5, q_ar5) 
+
+lnpar_cmip5 <- get.lnorm.par(p=p_cmip5 , q=q_cmip5)
+
+# Schurer paper
+lnpar_schurer <- get.lnorm.par(p=p_schurer, q=q_schurer)
+
+# Sherwood paper
+lnpar_sherwood <- get.lnorm.par(p=p_sherwood, q=q_sherwood)
+
+#richardson paper
+# This is different from the fit.lnorm
+lnpar_richardson <- get.lnorm.par(p=p_richardson, q=q_richardson)
+
+```
+
+
+```{r}
+
+ar5_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_ar5['meanlog'], sdlog = lnpar_ar5['sdlog'] )
+cmip5_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_cmip5['meanlog'], sdlog = lnpar_cmip5['sdlog'] )
+schurer_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_schurer['meanlog'], sdlog = lnpar_schurer['sdlog'] )
+sherwood_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_sherwood['meanlog'], sdlog = lnpar_sherwood['sdlog'] )
+richardson_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_richardson['meanlog'], sdlog = lnpar_richardson['sdlog'])
+  
+
+h <- hist(atcrpdf.trunc, breaks = 30, plot = FALSE)
+
+yfit_richardson <- richardson_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
+yfit_schurer <- schurer_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
+yfit_sherwood <- sherwood_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
+yfit_cmip5 <- cmip5_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
+yfit_ar5 <- ar5_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
+
+rn <- range(yfit_richardson, yfit_schurer,yfit_sherwood,yfit_cmip5, yfit_ar5)
+
+plot(h, xlim = c(0,4), ylim = rn, xlab = 'TCR', ylab = 'density', main = 'lognormal fits to quantiles')
+lines(tcr_range, yfit_richardson, lwd = 2, col = 'orange')
+lines(tcr_range, yfit_schurer, lwd = 2, col = 'red')
+lines(tcr_range, yfit_sherwood, lwd = 2, col = 'blue')
+lines(tcr_range, yfit_cmip5, lwd = 2, col = 'black')
+lines(tcr_range, yfit_ar5, lwd = 2, col = 'pink')
+
+legend('topright', c('Richardson 16', 'Schurer 18', 'Sherwood 20', 'CMIP5 13', 'AR5 13'),
+       col = c('orange', 'red', 'blue', 'black','pink'), lwd = 2)
+
+
+```
+
+
+## How close are the lognormal fits?
+```{r, fig.width = 6, fig.height = 6}
+
+# Plot theoretical vs actual quantile for each fit
+
+plot(q_ar5, qlnorm(p=p_ar5, meanlog = lnpar_ar5['meanlog'],  sdlog =  lnpar_ar5['sdlog']),
+     col = 'pink', pch = 19,
+     xlim = c(0.5,4.5), ylim = c(0.5,4.5),
+     xlab = 'given quantile', ylab = 'fitted quantile')
+points(q_cmip5, qlnorm(p=p_cmip5, meanlog = lnpar_cmip5['meanlog'],  sdlog =  lnpar_cmip5['sdlog']),
+       col = 'black', pch = 19)
+points(q_sherwood, qlnorm(p=p_sherwood, meanlog = lnpar_sherwood['meanlog'],  sdlog =  lnpar_sherwood['sdlog']),
+       col = 'blue', pch = 19)
+points(q_schurer, qlnorm(p=p_schurer, meanlog = lnpar_schurer['meanlog'],  sdlog =  lnpar_schurer['sdlog']),
+       col = 'red', pch = 19)
+points(q_richardson, qlnorm(p=p_richardson, meanlog = lnpar_richardson['meanlog'],  sdlog =  lnpar_richardson['sdlog']),
+       col ='orange', pch = 19)
+
+abline(0,1)
+
+
+
+
+```
+
+
+
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
