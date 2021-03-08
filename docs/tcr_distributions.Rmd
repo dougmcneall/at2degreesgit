@@ -30,7 +30,7 @@ Also "positive" and "extremely unlikely" (5% probability) above 3"
 
 I interpret this as
 
-| quantile  |  0% |  22% | 78% | 97.5% |
+| quantile  |  0% |  16% | 84% | 97.5% |
 |-----------|-----|------|-----|-------|
 |     tcr   |  0  | 1    | 2.5 |  3    |
 
@@ -60,10 +60,38 @@ Multimodel mean with increased variance for model uncertainty
 
 Likely (66% probability) range
 
-| quantile  | 22% | 50% | 78% |
+| quantile  | 16% | 50% | 84% |
 |-----------|-----|-----|-----|
 |     tcr   | 1.5 | 1.8 | 2.2 |
 
+
+### Jiménez-de-la Cuesta and Mauritsen (2019)
+
+| quantile  |  5%  | 50% | 95%  |
+|-----------|------|-----|------|
+|     tcr   | 1.17 | 1.7 | 2.16 |
+
+
+### Tokarska et al (2020)
+
+| quantile  | 16% | 50% | 84% |
+|-----------|-----|-----|-----|
+|     tcr   | 1.2 | 1.6 | 2.0 |
+
+
+### Njisse et al. (2020)
+
+Njisse et al. (2020) CMIP5 models
+
+| quantile  |  5%  |  16%  |  50% | 84%  |  95%  |
+|-----------|------|-------|------|------|-------|
+|     tcr   | 1.1  | 1.4   | 1.7  |  2.1 |  2.4  |
+
+Njisse et al. (2020) CMIP6 models
+
+| quantile  |  5%  |  16%  |  50% | 84%  |  95%  |
+|-----------|------|-------|------|------|-------|
+|     tcr   |   1  | 1.29  | 1.68 | 2.05 |  2.3  |
 
 
 ## Distributions used in Betts & McNeall (2018)
@@ -80,20 +108,20 @@ tcr_range = seq(from = 0, to = 5, by = 1/dx)
 # Still to do: pick a closer mean/sd (perhaps non normal?)
 tcrmean = 1.75
 tcrsd_used = 0.45 # incorrectly used in the paper.
-tcrsd = 0.97  # The final result is very sensitive to lower tail of tcr distribution
+tcrsd = 0.75 # The final result is very sensitive to lower tail of tcr distribution
 
-qnorm(p = c(0.22, 0.78), mean = tcrmean, sd = tcrsd_used)
-qnorm(p = c(0.22, 0.78), mean = tcrmean, sd = tcrsd)
+qnorm(p = c(0.16, 0.84), mean = tcrmean, sd = tcrsd_used)
+qnorm(p = c(0.16, 0.84), mean = tcrmean, sd = tcrsd)
 
 # A plot of what the assumed tcr distribution looks like
 tcrdens_used = dnorm(tcr_range, mean = tcrmean, sd = tcrsd_used)
 #tcrsamp_used  = rnorm(10000, mean = tcrmean, sd = tcrsd_used)
 
 tcrdens = dnorm(tcr_range, mean = tcrmean, sd = tcrsd)
-#tcrdens = 
+par(las = 1)
 plot(tcr_range, tcrdens_used, type = 'l', lwd = 2, main = "pr(TCR)", xlab = "TCR", ylab = "Probability density" )
-lines(tcr_range, tcrdens, col = 'red' )
-legend('topright', c('used in paper', 'corrected Normal distribution'), lty = 'solid', col = c('red', 'black'))
+lines(tcr_range, tcrdens, col = 'red', lwd = 2 )
+legend('topright', c('used in paper', 'corrected Normal distribution'), lty = 'solid', col = c('black', 'red'))
 ```
 
 
@@ -163,30 +191,13 @@ exp(fit.lnorm$estimate)
 ## Fit a lognormal distribution to all of the distributions from the literature
 
 ```{r}
-### CMIP5 models
-# AR5 Box 12.2 states:
-# "5 to 95% range of CMIP5 (1.2°C to 2.4°C; see Table 9.5), is positive and extremely unlikely greater than 3°C."
-#quantile   0%    5%    95%      97.5%
-#tcr        0    1.2     2.5     3
-
-
-### Schurer eta al (2018)
-
-#Multimodel mean with increased variance for model uncertainty
-#quantile 5%    50%   95%
-#tcr      1.2   1.7   2.4
-
-### Sherwood et al (2020)
-#Likely (66% probability) range
-#quantile     22%     50%    78%
-#tcr           1.5    1.8    2.2
 
 library(rriskDistributions)
 
 # Quantiles and probabilities from the various estimates
 
 # AR5 assessed likely
-p_ar5 <- c(0.22, 0.78, 0.975)
+p_ar5 <- c(0.16, 0.84, 0.975)
 q_ar5 <- c(1, 2.5, 3)
 
 # CMIP5 models
@@ -196,13 +207,26 @@ q_cmip5 <- c(1.2, 2.5, 3)
 p_schurer <- c(0.05,0.50, 0.95)
 q_schurer <- c(1.2, 1.7, 2.4)
 
-p_sherwood <- c(0.22,0.50, 0.78)
+p_sherwood <- c(0.16,0.50, 0.84)
 q_sherwood <- c(1.5, 1.8, 2.2)
 
 p_richardson <- c(0.05, 0.50, 0.95)
 q_richardson <- quantile(atcrpdf.trunc, p_richardson) # check these
 
+p_njisse_cmip5 <- c(0.05, 0.16, 0.5, 0.84, 0.95)
+q_njisse_cmip5 <- c(1.1, 1.4, 1.7, 2.1, 2.4 )
+
+p_njisse_cmip6 <- c(0.05, 0.16, 0.5, 0.84, 0.95)
+q_njisse_cmip6 <- c(1, 1.29, 1.68, 2.05, 2.3)
 # Calculate the parameters of a lognormal distribution that would fit those parameters
+
+
+p_jimenez <- c(0.05, 0.5, 0.95)
+q_jimenez <- c(1.17, 1.7, 2.16)
+  
+p_tokarska <- c(0.16, 0.5, 0.84)
+q_tokarska <- c(1.2, 1.6, 2.0)
+  
 
 lnpar_ar5 <- get.lnorm.par(p = p_ar5, q_ar5) 
 
@@ -218,19 +242,31 @@ lnpar_sherwood <- get.lnorm.par(p=p_sherwood, q=q_sherwood)
 # This is different from the fit.lnorm
 lnpar_richardson <- get.lnorm.par(p=p_richardson, q=q_richardson)
 
+lnpar_njisse_cmip5 <- get.lnorm.par(p=p_njisse_cmip5, q = q_njisse_cmip5)
+
+lnpar_njisse_cmip6 <- get.lnorm.par(p=p_njisse_cmip6, q = q_njisse_cmip6)
+
+lnpar_jimenez <- get.lnorm.par(p=p_jimenez, q = q_jimenez)
+
+lnpar_tokarska<- get.lnorm.par(p=p_tokarska, q = q_tokarska)
+
+
 ```
 
 
 ## Plot all of the lognormal fits
 
-```{r}
+```{r, fig.width = 10, fig.height =7}
 
 ar5_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_ar5['meanlog'], sdlog = lnpar_ar5['sdlog'] )
 cmip5_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_cmip5['meanlog'], sdlog = lnpar_cmip5['sdlog'] )
 schurer_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_schurer['meanlog'], sdlog = lnpar_schurer['sdlog'] )
 sherwood_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_sherwood['meanlog'], sdlog = lnpar_sherwood['sdlog'] )
 richardson_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_richardson['meanlog'], sdlog = lnpar_richardson['sdlog'])
-  
+njisse_cmip5_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_njisse_cmip5['meanlog'], sdlog = lnpar_njisse_cmip5['sdlog'])  
+njisse_cmip6_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_njisse_cmip6['meanlog'], sdlog = lnpar_njisse_cmip6['sdlog'])
+jimenez_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_jimenez['meanlog'], sdlog = lnpar_jimenez['sdlog'])
+tokarska_ln_dens <- dlnorm(x = tcr_range, meanlog = lnpar_tokarska['meanlog'], sdlog = lnpar_tokarska['sdlog'])
 
 h <- hist(atcrpdf.trunc, breaks = 30, plot = FALSE)
 
@@ -239,29 +275,38 @@ yfit_schurer <- schurer_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
 yfit_sherwood <- sherwood_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
 yfit_cmip5 <- cmip5_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
 yfit_ar5 <- ar5_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
+yfit_njisse_cmip5 <- njisse_cmip5_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
+yfit_njisse_cmip6 <- njisse_cmip6_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
+yfit_jimenez <- jimenez_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
+yfit_tokarska <- tokarska_ln_dens*diff(h$mids[1:2])*length(atcrpdf.trunc)
 
-rn <- range(yfit_richardson, yfit_schurer,yfit_sherwood,yfit_cmip5, yfit_ar5)
+rn <- range(yfit_richardson, yfit_schurer,yfit_sherwood,yfit_cmip5, yfit_ar5,yfit_njisse_cmip5, yfit_njisse_cmip6,yfit_jimenez,yfit_tokarska)
 
 plot(h, xlim = c(0,4), ylim = rn, xlab = 'TCR', ylab = 'density', main = 'lognormal fits to quantiles')
-lines(tcr_range, yfit_richardson, lwd = 2, col = 'orange')
-lines(tcr_range, yfit_schurer, lwd = 2, col = 'red')
-lines(tcr_range, yfit_sherwood, lwd = 2, col = 'blue')
-lines(tcr_range, yfit_cmip5, lwd = 2, col = 'black')
-lines(tcr_range, yfit_ar5, lwd = 2, col = 'pink')
+lines(tcr_range, yfit_richardson, lwd = 3, col = 'orange')
+lines(tcr_range, yfit_schurer, lwd = 3, col = 'red')
+lines(tcr_range, yfit_sherwood, lwd = 3, col = 'blue')
+lines(tcr_range, yfit_cmip5, lwd = 3, col = 'black')
+lines(tcr_range, yfit_ar5, lwd = 3, col = 'pink')
+lines(tcr_range, yfit_njisse_cmip5, lwd = 3, col = 'purple', lty = 'dashed')
+lines(tcr_range, yfit_njisse_cmip6, lwd = 3, col = 'purple')
+lines(tcr_range, yfit_jimenez, lwd = 3, col = 'darkgrey')
+lines(tcr_range, yfit_tokarska, lwd = 3, col = 'darkblue')
 
-legend('topright', c('Richardson 16', 'Schurer 18', 'Sherwood 20', 'CMIP5 13', 'AR5 13'),
-       col = c('orange', 'red', 'blue', 'black','pink'), lwd = 2)
+legend('topright', c('Richardson 16', 'Schurer 18', 'Sherwood 20', 'CMIP5 13', 'AR5 13', 'Njisse CMIP5', 'Njisse CMIP6', 'Jimenez 2019', 'Tokarska 2020'),
+       col = c('orange', 'red', 'blue', 'black','pink', 'purple', 'purple', 'darkgrey', 'darkblue'), lwd = 3, lty = c('solid','solid','solid','solid','solid','dashed','solid', 'solid', 'solid'))
 
 
 ```
 
 
 ## How close are the lognormal fits?
+This section plots the fitted quantiles (on the y axis) against the given quantiles (from the literature, on the x axis). Lower quantiles (with values below 3) are in general well fitted. The fitted upper quantile of the distribution is much higher than suggested by the given distribution, suggesting that the fit assigns too much probability to the upper tail of the distribution than the assesed distribution would suggest is right.
 
 ```{r, fig.width = 6, fig.height = 6}
 
 # Plot theoretical vs actual quantile for each fit
-
+par(las = 1)
 plot(q_ar5, qlnorm(p=p_ar5, meanlog = lnpar_ar5['meanlog'],  sdlog =  lnpar_ar5['sdlog']),
      col = 'pink', pch = 19,
      xlim = c(0.5,4.5), ylim = c(0.5,4.5),
@@ -274,6 +319,8 @@ points(q_schurer, qlnorm(p=p_schurer, meanlog = lnpar_schurer['meanlog'],  sdlog
        col = 'red', pch = 19)
 points(q_richardson, qlnorm(p=p_richardson, meanlog = lnpar_richardson['meanlog'],  sdlog =  lnpar_richardson['sdlog']),
        col ='orange', pch = 19)
+legend('topleft', c('Richardson 16', 'Schurer 18', 'Sherwood 20', 'CMIP5 13', 'AR5 13'),
+       col = c('orange', 'red', 'blue', 'black','pink'), pch = 19)
 
 abline(0,1)
 
@@ -286,22 +333,17 @@ abline(0,1)
 
 
 
-## R Markdown
+```{r}
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+h <- hist(atcrpdf.trunc, prob = TRUE, ylim = c(0,1), xlim = c(0,4), main = 'Fit to richardson distribution')
+d <- density(atcrpdf.trunc)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+lines(d, lwd = 2)
+lines(tcr_range,richardson_ln_dens, col = 'orange', lwd = 2)
+legend('topright', legend = c('density estimate', 'lognormal fit'), col = c('black', 'orange'), lwd = 2)
 
-```{r cars}
-summary(cars)
+
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
