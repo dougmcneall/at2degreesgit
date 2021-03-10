@@ -152,21 +152,21 @@ atcrpdf.trunc = atcrpdf[atcrpdf<12 & atcrpdf >0]
 ```
 
 ```{r}
-library(fitdistrplus)
+#library(fitdistrplus)
 ```
 
 Fit the Gamma distribution, starting from the above parameters.
 
 ```{r}
-start.gamma <- list(shape = 5, rate = 3)
-fit.gamma <- fitdist(atcrpdf.trunc, distr = "gamma", method = "mle", start = start.gamma)
-summary(fit.gamma)
+#start.gamma <- list(shape = 5, rate = 3)
+#fit.gamma <- fitdist(atcrpdf.trunc, distr = "gamma", method = "mle", start = start.gamma)
+#summary(fit.gamma)
 
 ```
 
 ```{r}
 
-plot(fit.gamma)
+#plot(fit.gamma)
 
 ```
 
@@ -179,12 +179,12 @@ This seems to fit a little better than the Gamma distribution.
 # lognormal?
 # A lognormal distribution seems to fit the 
 
-fit.lnorm <- fitdist(atcrpdf.trunc, distr = "lnorm", method = "mle")
-summary(fit.lnorm)
+#fit.lnorm <- fitdist(atcrpdf.trunc, distr = "lnorm", method = "mle")
+#summary(fit.lnorm)
 
-plot(fit.lnorm)
+#plot(fit.lnorm)
 
-exp(fit.lnorm$estimate)
+#exp(fit.lnorm$estimate)
 
 ```
 
@@ -303,7 +303,7 @@ legend('topright', c('Richardson 16', 'Schurer 18', 'Sherwood 20', 'CMIP5 13', '
 ## How close are the lognormal fits?
 This section plots the fitted quantiles (on the y axis) against the given quantiles (from the literature, on the x axis). Lower quantiles (with values below 3) are in general well fitted. The fitted upper quantile of the distribution is much higher than suggested by the given distribution, suggesting that the fit assigns too much probability to the upper tail of the distribution than the assesed distribution would suggest is right.
 
-```{r, fig.width = 6, fig.height = 6}
+```{r, fig.width = 7, fig.height = 7}
 
 # Plot theoretical vs actual quantile for each fit
 par(las = 1)
@@ -319,8 +319,25 @@ points(q_schurer, qlnorm(p=p_schurer, meanlog = lnpar_schurer['meanlog'],  sdlog
        col = 'red', pch = 19)
 points(q_richardson, qlnorm(p=p_richardson, meanlog = lnpar_richardson['meanlog'],  sdlog =  lnpar_richardson['sdlog']),
        col ='orange', pch = 19)
-legend('topleft', c('Richardson 16', 'Schurer 18', 'Sherwood 20', 'CMIP5 13', 'AR5 13'),
-       col = c('orange', 'red', 'blue', 'black','pink'), pch = 19)
+
+
+points(q_njisse_cmip5, qlnorm(p=p_njisse_cmip5, meanlog = lnpar_njisse_cmip5['meanlog'],  sdlog =  lnpar_njisse_cmip5['sdlog']),
+       col ='purple', pch = 19)
+
+points(q_njisse_cmip6, qlnorm(p=p_njisse_cmip6, meanlog = lnpar_njisse_cmip6['meanlog'],  sdlog =  lnpar_njisse_cmip6['sdlog']),
+       col ='purple', pch = 21)
+
+points(q_jimenez, qlnorm(p=p_jimenez, meanlog = lnpar_jimenez['meanlog'],  sdlog =  lnpar_jimenez['sdlog']),
+       col ='darkgrey', pch = 19)
+
+points(q_tokarska, qlnorm(p=p_tokarska, meanlog = lnpar_tokarska['meanlog'],  sdlog =  lnpar_tokarska['sdlog']),
+       col ='darkblue', pch = 19)
+
+
+legend('topleft', c('Richardson 16', 'Schurer 18', 'Sherwood 20', 'CMIP5 13', 'AR5 13', 'Njisse CMIP5', 'Njisse CMIP6', 
+                    'Jimenez 19', 'Tokarska 20'),
+       col = c('orange', 'red', 'blue', 'black','pink', 'purple', 'purple', 'darkgrey', 'darkblue'),
+       pch = c(19,19,19,19,19,19,21,19,19))
 
 abline(0,1)
 
