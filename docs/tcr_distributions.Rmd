@@ -341,9 +341,6 @@ legend('topleft', c('Richardson 16', 'Schurer 18', 'Sherwood 20', 'CMIP5 13', 'A
 
 abline(0,1)
 
-
-
-
 ```
 
 
@@ -361,6 +358,159 @@ legend('topright', legend = c('density estimate', 'lognormal fit'), col = c('bla
 
 
 ```
+
+
+
+```{r}
+# Set up a list of all the studies with distributions
+namelist <- c('ar5_13', 'cmip5_13', 'richardson_16', 'schurer_18', 'jimenez_19', 'njisse_20_cmip5', 'njisse_20_cmip6', 'sherwood_20', 'tokarska_20')
+
+
+ar5_13_quantiles <- list(p = c(0.16, 0.84, 0.975), q = c(1, 2.5, 3))
+
+cmip5_13_quantiles <- list(p = c(0.05, 0.95, 0.975), q = c(1.2, 2.5, 3) )
+
+richardson_16_quantiles <- list(p = c(0.05, 0.50, 0.95), q = quantile(atcrpdf.trunc, c(0.05, 0.50, 0.95)))
+
+schurer_18_quantiles <- list(p = c(0.05,0.50, 0.95), q = c(1.2, 1.7, 2.4))
+
+jimenez_19_quantiles <- list(p = c(0.05, 0.5, 0.95), q = c(1.17, 1.7, 2.16))
+  
+njisse_20_cmip5_quantiles <- list(p = c(0.05, 0.16, 0.5, 0.84, 0.95), q = c(1.1, 1.4, 1.7, 2.1, 2.4 ))
+
+njisse_20_cmip6_quantiles <- list(p = c(0.05, 0.16, 0.5, 0.84, 0.95), q = c(1, 1.29, 1.68, 2.05, 2.3))
+
+sherwood_20_quantiles <- list(p = c(0.16,0.50, 0.84), q = c(1.5, 1.8, 2.2))
+
+tokarska_20_quantiles <- list(p =  c(0.16, 0.5, 0.84), q = c(1.2, 1.6, 2.0))
+
+
+```
+
+
+```{r}
+# find the parameters and density of a lognormal distribution for each of the 
+
+for(i in namelist){
+  
+  pq <- get(paste0(i,'_quantiles'))
+  lnpar <- get.lnorm.par(p = pq$p, pq$q)
+  assign(paste0(i,'_lnpar'), lnpar)
+  dens <- dlnorm(x = tcr_range, meanlog = lnpar['meanlog'], sdlog = lnpar['sdlog'] ) 
+  assign(paste0(i,'_lndens'), dens)
+}
+
+
+```
+
+```{r}
+cbPal <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2","#0072B2", "#D55E00", "#CC79A7")
+ltyvec <- c('solid', 'solid','solid', 'solid','solid', 'solid','dashed', 'solid', 'solid')
+
+plot(tcr_range,sherwood_20_lndens, col = 'orange', lwd = 2, type = 'l', pty = 'n', ylim = c(0,1.5))
+
+for(i in 1:length(namelist)){
+  
+  d <- get(paste0(namelist[i], '_lndens'))
+  lines(tcr_range, d, lwd = 3, col =  cbPal[i], lty = ltyvec[i])
+  
+}
+
+legend('topright', legend = namelist, col = cbPal, lwd = 3, lty = ltyvec)
+
+
+
+
+```
+
+
+## Sample from the fitted distributions and push through TCR -> Co2 Conc. function.
+```{r}
+tfunc  = function(tcr, c0=280, dT=2, dF2co2=3.71){
+  # Transfer function that takes in TCR and outputs
+  # a co2 concentration at a given temperature change
+  # Inputs
+  # tcr     ...  Transient climate response
+  # c0      ...  baseline co2 concentration in ppm
+  # dT      ...  temperature change from baseline (degC)  
+  # dF2co2  ...  Forcing due to doubling of co2 (w/m^2)
+  
+  out = c0 * exp( (dT * dF2co2) / (5.35 * tcr))
+  out
+}
+
+
+```
+
+
+## Sample from the lognormal distributions and push through the TCR transfer function
+Truncated TCR values below 0.5, as you get 
+
+```{r}
+
+nsamp <- 100000
+for(i in namelist){
+  
+  lnpar <- get(paste0(i, '_lnpar'))
+  samp <- rlnorm(nsamp, meanlog = lnpar['meanlog'], sdlog = lnpar['sdlog'])
+  samp[samp < 0.5] <- NA
+  co2_conc_1_5 <- tfunc(samp, dT = 1.5)
+  co2_conc_2 <- tfunc(samp, dT = 2)
+  co2_conc <- list(tcr_samp = samp, conc_1_5 = co2_conc_1_5, conc_2 = co2_conc_2)
+  
+  assign(paste0(i, '_co2_conc'), co2_conc)
+}
+
+```
+
+
+```{r, fig.width = 10, fig.height = 12}
+
+par(mfrow = c(2,1), mar = c(5,4,2,1))
+#plot(tcr_range,sherwood_20_lndens, col = 'orange', lwd = 2, type = 'l', pty = 'n', ylim = c(0,1.5))
+dens_1_5 <- density(ar5_13_co2_conc$conc_1_5, na.rm = TRUE)
+
+
+plot(dens_1_5, pty = 'n', xlim = c(280,1000), ylim = c(0, 0.009), xlab = 'CO2 concentration (ppmv)', ylab = 'density', main = '',
+     bty = 'l')
+
+for(i in 1:length(namelist)){
+  
+  co2_conc <- get(paste0(namelist[i], '_co2_conc'))
+  dens_1_5 <- density(co2_conc$conc_1_5, na.rm = TRUE)
+  
+
+  lines(dens_1_5, col = cbPal[i], lty = ltyvec[i],lwd = 3)
+}
+legend('topright', legend = namelist, col = cbPal, lwd = 3, lty = ltyvec)
+mtext(side = 3, text = 'CO2 concentration at 1.5 degrees above preindustrial', line = -1, adj = 0.1, cex = 1.5)
+
+
+dens_2 <- density(ar5_13_co2_conc$conc_2, na.rm = TRUE)
+plot(dens_2, pty = 'n', xlim = c(280,1000), ylim = c(0, 0.009),main = '', xlab = 'CO2 concentration (ppmv)', ylab = 'density',
+     bty = 'l')
+
+for(i in 1:length(namelist)){
+  
+  co2_conc <- get(paste0(namelist[i], '_co2_conc'))
+  dens_2 <- density(co2_conc$conc_2, na.rm = TRUE)
+  
+
+  lines(dens_2, col = cbPal[i], lty = ltyvec[i], lwd = 3)
+}
+
+mtext(side = 3, text = 'CO2 concentration at 1.5 degrees above preindustrial', line = -1, adj = 0.1, cex = 1.5)
+
+
+
+
+```
+
+## something odd is going on with AR5 range. Hitting limits of method?
+
+
+
+
 
 
 
