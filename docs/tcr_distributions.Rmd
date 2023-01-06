@@ -1,23 +1,25 @@
 ---
-title: "tcr_distributions"
+title: "TCR and CO2 concentration in AR6 and CMIP6"
 author: "Doug McNeall"
-date: "2/17/2021"
-output: html_document
+date: '2023-01-06'
+output:
+  html_document:
+    toc: true
+    toc_float:
+      toc_collapsed: true
+    toc_depth: 3
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## Possible distributions for TCR
-
-There are a number of estimates for the pdf of TCR. Here are some possible fits to the stated distributions.
+We fit distributions to assessed quantiles of TCR in the literature, and then push those through the transfer function from Betts & McNeall (2018) to find an implied CO2 concentrayion at warming levels 1.5 and 2 degrees above preindustrial.
 
 
+# Quantiles from the literature
 
-## Quantiles from the literature
-
-There are a number of sources of assessed probability distributions (sometimes just quantiles) in the literature. A complicating factor is that they often give a small number of different quantiles, or probability ranges, leaving a large number of potential distributions that would fit. For example, they might state a 66% probability range, without specifying the quantiles this range apllies to.
+There are a number of sources of assessed probability distributions for TCR (sometimes just quantiles) in the literature. A complicating factor is that they often give a small number of different quantiles, or probability ranges, leaving a large number of potential distributions that would fit. For example, they might state a 66% probability range, without specifying the quantiles this range aplies to.
 
 
 ### AR5 (assessed range)
@@ -30,7 +32,7 @@ Also "positive" and "extremely unlikely" (5% probability) above 3"
 
 I interpret this as
 
-| quantile  |  0% |  16% | 84% | 97.5% |
+| quantile  |  0% |  17% | 83% | 97.5% |
 |-----------|-----|------|-----|-------|
 |     tcr   |  0  | 1    | 2.5 |  3    |
 
@@ -118,10 +120,14 @@ tcrdens_used = dnorm(tcr_range, mean = tcrmean, sd = tcrsd_used)
 #tcrsamp_used  = rnorm(10000, mean = tcrmean, sd = tcrsd_used)
 
 tcrdens = dnorm(tcr_range, mean = tcrmean, sd = tcrsd)
-par(las = 1)
-plot(tcr_range, tcrdens_used, type = 'l', lwd = 2, main = "pr(TCR)", xlab = "TCR", ylab = "Probability density" )
-lines(tcr_range, tcrdens, col = 'red', lwd = 2 )
-legend('topright', c('used in paper', 'corrected Normal distribution'), lty = 'solid', col = c('black', 'red'))
+```
+
+
+```{r}
+#par(las = 1)
+#plot(tcr_range, tcrdens_used, type = 'l', lwd = 2, main = "pr(TCR)", xlab = "TCR", ylab = "Probability density" )
+#lines(tcr_range, tcrdens, col = 'red', lwd = 2 )
+#legend('topright', c('used in paper', 'corrected Normal distribution'), lty = 'solid', col = c('black', 'red'))
 ```
 
 
@@ -363,10 +369,10 @@ legend('topright', legend = c('density estimate', 'lognormal fit'), col = c('bla
 
 ```{r}
 # Set up a list of all the studies with distributions
-namelist <- c('ar5_13', 'cmip5_13', 'richardson_16', 'schurer_18', 'jimenez_19', 'njisse_20_cmip5', 'njisse_20_cmip6', 'sherwood_20', 'tokarska_20')
+namelist <- c('ar5_13', 'cmip5_13', 'richardson_16', 'schurer_18', 'jimenez_19', 'njisse_20_cmip5', 'njisse_20_cmip6', 'sherwood_20', 'tokarska_20', 'ar6_21_assessed')
 
 
-ar5_13_quantiles <- list(p = c(0.16, 0.84, 0.975), q = c(1, 2.5, 3))
+ar5_13_quantiles <- list(p = c(0.17, 0.83, 0.975), q = c(1, 2.5, 3))
 
 cmip5_13_quantiles <- list(p = c(0.05, 0.95, 0.975), q = c(1.2, 2.5, 3) )
 
@@ -376,14 +382,21 @@ schurer_18_quantiles <- list(p = c(0.05,0.50, 0.95), q = c(1.2, 1.7, 2.4))
 
 jimenez_19_quantiles <- list(p = c(0.05, 0.5, 0.95), q = c(1.17, 1.7, 2.16))
   
-njisse_20_cmip5_quantiles <- list(p = c(0.05, 0.16, 0.5, 0.84, 0.95), q = c(1.1, 1.4, 1.7, 2.1, 2.4 ))
+njisse_20_cmip5_quantiles <- list(p = c(0.05, 0.17, 0.5, 0.83, 0.95), q = c(1.1, 1.4, 1.7, 2.1, 2.4 ))
 
-njisse_20_cmip6_quantiles <- list(p = c(0.05, 0.16, 0.5, 0.84, 0.95), q = c(1, 1.29, 1.68, 2.05, 2.3))
+njisse_20_cmip6_quantiles <- list(p = c(0.05, 0.17, 0.5, 0.83, 0.95), q = c(1, 1.29, 1.68, 2.05, 2.3))
 
-sherwood_20_quantiles <- list(p = c(0.16,0.50, 0.84), q = c(1.5, 1.8, 2.2))
+sherwood_20_quantiles <- list(p = c(0.17,0.50, 0.83), q = c(1.5, 1.8, 2.2))
 
-tokarska_20_quantiles <- list(p =  c(0.16, 0.5, 0.84), q = c(1.2, 1.6, 2.0))
+tokarska_20_quantiles <- list(p =  c(0.17, 0.5, 0.83), q = c(1.2, 1.6, 2.0))
 
+ar6_21_assessed_quantiles <- list(p = c(0.05, 0.17, 0.5, 0.83, 0.95) , q = c(1.2, 1.4, 1.8, 2.2, 2.4))
+
+
+# Based on process understanding, warming over the instrumental
+# record, and emergent constraints, the best estimate of TCR is
+# 1.8°C, the likely range is 1.4°C to 2.2°C and the very likely
+# range is 1.2°C to 2.4°C (high confidence). {7.5.5}
 
 ```
 
@@ -394,7 +407,7 @@ tokarska_20_quantiles <- list(p =  c(0.16, 0.5, 0.84), q = c(1.2, 1.6, 2.0))
 for(i in namelist){
   
   pq <- get(paste0(i,'_quantiles'))
-  lnpar <- get.lnorm.par(p = pq$p, pq$q)
+  lnpar <- get.lnorm.par(p = pq$p, pq$q, show.output = FALSE)
   assign(paste0(i,'_lnpar'), lnpar)
   dens <- dlnorm(x = tcr_range, meanlog = lnpar['meanlog'], sdlog = lnpar['sdlog'] ) 
   assign(paste0(i,'_lndens'), dens)
@@ -403,11 +416,37 @@ for(i in namelist){
 
 ```
 
-```{r}
-cbPal <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2","#0072B2", "#D55E00", "#CC79A7")
-ltyvec <- c('solid', 'solid','solid', 'solid','solid', 'solid','dashed', 'solid', 'solid')
 
-plot(tcr_range,sherwood_20_lndens, col = 'orange', lwd = 2, type = 'l', pty = 'n', ylim = c(0,1.5))
+## TCR in the AR6
+Caption
+https://www.ipcc.ch/report/ar6/wg1/figures/chapter-7/figure-7-18
+
+Big version (in the report)
+https://www.ipcc.ch/report/ar6/wg1/downloads/figures/IPCC_AR6_WGI_Figure_7_18.png
+
+Somebody has calculated the CMIP6 TCR values! (this could be useful)
+
+```{r}
+
+
+tcr_cmip6_csv <- read.csv(file = 'https://dap.ceda.ac.uk/badc/ar6_wg1/data/ch_07/inputdata_ch7_fig18/v20220721/tcr_for_faq.csv')
+
+tcr_cmip6_raw <- head(tcr_cmip6_csv$TCR, -1)
+
+```
+
+
+# Plot TCR fitted lognormal distributions
+Blue dots are CMIP6 model TCR
+
+```{r}
+cbPal <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2","#0072B2", "#D55E00", "#CC79A7", "red")
+ltyvec <- c('solid', 'solid','solid', 'solid','solid', 'solid','dashed', 'solid', 'solid', 'solid')
+
+par(las = 1)
+plot(tcr_range,sherwood_20_lndens, col = 'orange', lwd = 2, type = 'l', pty = 'n', ylim = c(0,1.5),
+     xlab = expression(paste('TCR (', degree, 'C)' )), ylab = 'density', bty = 'n'
+     )
 
 for(i in 1:length(namelist)){
   
@@ -416,15 +455,16 @@ for(i in 1:length(namelist)){
   
 }
 
-legend('topright', legend = namelist, col = cbPal, lwd = 3, lty = ltyvec)
+points(tcr_cmip6_raw, jitter(rep(0, length(tcr_cmip6_raw))), pch = 19, col = 'blue')
 
-
-
+legend('topright', legend = c(namelist, 'CMIP6'), col = c(cbPal, 'blue'), lwd = 3, lty = c(ltyvec, NA), pch = c(rep(NA,10), 19))
 
 ```
 
 
-## Sample from the fitted distributions and push through TCR -> Co2 Conc. function.
+# Plot implied CO2 at warming levels
+
+Transfer function
 ```{r}
 tfunc  = function(tcr, c0=280, dT=2, dF2co2=3.71){
   # Transfer function that takes in TCR and outputs
@@ -444,7 +484,7 @@ tfunc  = function(tcr, c0=280, dT=2, dF2co2=3.71){
 
 
 ## Sample from the lognormal distributions and push through the TCR transfer function
-Truncated TCR values below 0.5, as you get 
+Truncated TCR values below 0.5, as you get odd things happening
 
 ```{r}
 
@@ -464,14 +504,24 @@ for(i in namelist){
 ```
 
 
-```{r, fig.width = 10, fig.height = 12}
+```{r}
+# Run CMIP6 models through the tcr transfer function
 
-par(mfrow = c(2,1), mar = c(5,4,2,1))
+cmip6_co2_conc_15 <- tfunc(tcr = tcr_cmip6_raw, c0=280, dT=1.5, dF2co2=3.71)
+cmip6_co2_conc_2 <- tfunc(tcr = tcr_cmip6_raw, c0=280, dT=1.5, dF2co2=3.71)
+
+```
+
+## CO2 at 1.5 and 2 degrees
+
+```{r, fig.width = 8, fig.height = 10}
+
+par(mfrow = c(2,1), mar = c(5,4,2,1), las = 1)
 #plot(tcr_range,sherwood_20_lndens, col = 'orange', lwd = 2, type = 'l', pty = 'n', ylim = c(0,1.5))
 dens_1_5 <- density(ar5_13_co2_conc$conc_1_5, na.rm = TRUE)
 
 
-plot(dens_1_5, pty = 'n', xlim = c(280,1000), ylim = c(0, 0.009), xlab = 'CO2 concentration (ppmv)', ylab = 'density', main = '',
+plot(dens_1_5, pty = 'n', xlim = c(280,1000), ylim = c(0, 0.009), xlab = expression(CO[2]~conc.~(ppmv)), ylab = 'density', main = '',
      bty = 'l')
 
 for(i in 1:length(namelist)){
@@ -482,12 +532,16 @@ for(i in 1:length(namelist)){
 
   lines(dens_1_5, col = cbPal[i], lty = ltyvec[i],lwd = 3)
 }
-legend('topright', legend = namelist, col = cbPal, lwd = 3, lty = ltyvec)
-mtext(side = 3, text = 'CO2 concentration at 1.5 degrees above preindustrial', line = -1, adj = 0.1, cex = 1.5)
+
+points(cmip6_co2_conc_15 , jitter(rep(0, length(cmip6_co2_conc_15)), factor = 0.01), col = 'blue', pch = 19)
+
+legend('topright', legend = c(namelist, 'CMIP6'), col = c(cbPal, 'blue'), lwd = 3, lty = c(ltyvec, NA), pch = c(rep(NA,10), 19), bty = 'n',
+       cex = 0.9)
+mtext(side = 3, text = expression(CO[2]~concentration~at~1.5*degree*C~above~prindustrial), line = -1, adj = 0.1, cex = 1.5)
 
 
 dens_2 <- density(ar5_13_co2_conc$conc_2, na.rm = TRUE)
-plot(dens_2, pty = 'n', xlim = c(280,1000), ylim = c(0, 0.009),main = '', xlab = 'CO2 concentration (ppmv)', ylab = 'density',
+plot(dens_2, pty = 'n', xlim = c(280,1000), ylim = c(0, 0.009),main = '', xlab = expression(CO[2]~conc.~(ppmv)), ylab = 'density',
      bty = 'l')
 
 for(i in 1:length(namelist)){
@@ -498,15 +552,16 @@ for(i in 1:length(namelist)){
 
   lines(dens_2, col = cbPal[i], lty = ltyvec[i], lwd = 3)
 }
+points(cmip6_co2_conc_2 , jitter(rep(0, length(cmip6_co2_conc_15)), factor = 0.01), col = 'blue', pch = 19)
+legend('topright', legend = c(namelist, 'CMIP6'), col = c(cbPal, 'blue'), lwd = 3, lty = c(ltyvec, NA), pch = c(rep(NA,10), 19), bty = 'n',
+       cex = 0.9)
 
-mtext(side = 3, text = 'CO2 concentration at 1.5 degrees above preindustrial', line = -1, adj = 0.1, cex = 1.5)
-
-
-
+mtext(side = 3, text = expression(CO[2]~concentration~at~2*degree*C~above~prindustrial), line = -1, adj = 0.1, cex = 1.5)
 
 ```
 
-## something odd is going on with AR5 range. Hitting limits of method?
+
+
 
 
 
