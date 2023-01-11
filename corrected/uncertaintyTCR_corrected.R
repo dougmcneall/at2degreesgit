@@ -15,7 +15,7 @@ tfunc  = function(tcr, c0=280, dT=2, dF2co2=3.71){
   # Inputs
   # tcr     ...  Transient climate response
   # c0      ...  baseline co2 concentration in ppm
-  # dT      ...  temperature change from baseline (degC)
+  # dT      ...  temperature change from baseline (degC)  
   # dF2co2  ...  Forcing due to doubling of co2 (w/m^2)
   
   out = c0 * exp( (dT * dF2co2) / (5.35 * tcr))
