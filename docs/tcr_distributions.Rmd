@@ -499,7 +499,10 @@ for(i in namelist){
   samp[samp < 0.5] <- NA
   co2_conc_1_5 <- tfunc(samp, dT = 1.5)
   co2_conc_2 <- tfunc(samp, dT = 2)
-  co2_conc <- list(tcr_samp = samp, conc_1_5 = co2_conc_1_5, conc_2 = co2_conc_2)
+  co2_conc_3 <- tfunc(samp, dT = 3)
+  co2_conc_4 <- tfunc(samp, dT = 4)
+  
+  co2_conc <- list(tcr_samp = samp, conc_1_5 = co2_conc_1_5, conc_2 = co2_conc_2, conc_3 = co2_conc_3, conc_4 = co2_conc_4  )
   
   assign(paste0(i, '_co2_conc'), co2_conc)
 }
@@ -513,17 +516,24 @@ for(i in namelist){
 cmip6_co2_conc_tcr_proj_15 <- tfunc(tcr = tcr_cmip6_raw, c0=280, dT=1.5, dF2co2=3.71)
 cmip6_co2_conc_tcr_proj_2 <- tfunc(tcr = tcr_cmip6_raw, c0=280, dT=2, dF2co2=3.71)
 
+cmip6_co2_conc_tcr_proj_3 <- tfunc(tcr = tcr_cmip6_raw, c0=280, dT=3, dF2co2=3.71)
+cmip6_co2_conc_tcr_proj_4 <- tfunc(tcr = tcr_cmip6_raw, c0=280, dT=4, dF2co2=3.71)
+
 ```
 
 
-```{r, fig.width = 8, fig.height = 10}
+```{r, fig.width = 8, fig.height = 15}
 
-par(mfrow = c(2,1), mar = c(5,4,2,1), las = 1)
+par(mfrow = c(4,1), mar = c(5,4,2,1), las = 1)
 #plot(tcr_range,sherwood_20_lndens, col = 'orange', lwd = 2, type = 'l', pty = 'n', ylim = c(0,1.5))
+
+xlim = c(280, 1500)
+
+# GWL == 1.5
 dens_1_5 <- density(ar5_13_co2_conc$conc_1_5, na.rm = TRUE)
 
 
-plot(dens_1_5, pty = 'n', xlim = c(280,1000), ylim = c(0, 0.009), xlab = expression(CO[2]~conc.~(ppmv)), ylab = 'density', main = '',
+plot(dens_1_5, pty = 'n', xlim = xlim, ylim = c(0, 0.009), xlab = expression(CO[2]~conc.~(ppmv)), ylab = 'density', main = '',
      bty = 'l')
 
 for(i in 1:length(namelist)){
@@ -541,9 +551,9 @@ legend('topright', legend = c(namelist, 'CMIP6 projected'), col = c(cbPal, 'blue
        cex = 0.9)
 mtext(side = 3, text = expression(CO[2]~concentration~at~1.5*degree*C~above~prindustrial), line = -1, adj = 0.1, cex = 1.5)
 
-
+# GWL == 2
 dens_2 <- density(ar5_13_co2_conc$conc_2, na.rm = TRUE)
-plot(dens_2, pty = 'n', xlim = c(280,1000), ylim = c(0, 0.009),main = '', xlab = expression(CO[2]~conc.~(ppmv)), ylab = 'density',
+plot(dens_2, pty = 'n', xlim = xlim, ylim = c(0, 0.009),main = '', xlab = expression(CO[2]~conc.~(ppmv)), ylab = 'density',
      bty = 'l')
 
 for(i in 1:length(namelist)){
@@ -560,14 +570,54 @@ legend('topright', legend = c(namelist, 'CMIP6 projected'), col = c(cbPal, 'blue
 
 mtext(side = 3, text = expression(CO[2]~concentration~at~2*degree*C~above~prindustrial), line = -1, adj = 0.1, cex = 1.5)
 
+# GWL == 3
+dens_3 <- density(ar5_13_co2_conc$conc_3, na.rm = TRUE)
+plot(dens_3, pty = 'n', xlim = xlim, ylim = c(0, 0.009),main = '', xlab = expression(CO[2]~conc.~(ppmv)), ylab = 'density',
+     bty = 'l')
+
+for(i in 1:length(namelist)){
+  
+  co2_conc <- get(paste0(namelist[i], '_co2_conc'))
+  dens_3 <- density(co2_conc$conc_3, na.rm = TRUE)
+  
+
+  lines(dens_3, col = cbPal[i], lty = ltyvec[i], lwd = 3)
+}
+points(cmip6_co2_conc_tcr_proj_3, jitter(rep(0, length(cmip6_co2_conc_tcr_proj_3)), factor = 0.01), col = 'blue', pch = 19)
+legend('topright', legend = c(namelist, 'CMIP6 projected'), col = c(cbPal, 'blue'), lwd = 3, lty = c(ltyvec, NA), pch = c(rep(NA,10), 19), bty = 'n',
+       cex = 0.9)
+
+mtext(side = 3, text = expression(CO[2]~concentration~at~3*degree*C~above~prindustrial), line = -1, adj = 0.1, cex = 1.5)
+
+
+# GWL == 4
+dens_4 <- density(ar5_13_co2_conc$conc_4, na.rm = TRUE)
+plot(dens_4, pty = 'n', xlim = xlim , ylim = c(0, 0.009),main = '', xlab = expression(CO[2]~conc.~(ppmv)), ylab = 'density',
+     bty = 'l')
+
+for(i in 1:length(namelist)){
+  
+  co2_conc <- get(paste0(namelist[i], '_co2_conc'))
+  dens_4 <- density(co2_conc$conc_4, na.rm = TRUE)
+  
+
+  lines(dens_4, col = cbPal[i], lty = ltyvec[i], lwd = 3)
+}
+points(cmip6_co2_conc_tcr_proj_4, jitter(rep(0, length(cmip6_co2_conc_tcr_proj_4)), factor = 0.01), col = 'blue', pch = 19)
+legend('topright', legend = c(namelist, 'CMIP6 projected'), col = c(cbPal, 'blue'), lwd = 3, lty = c(ltyvec, NA), pch = c(rep(NA,10), 19), bty = 'n',
+       cex = 0.9)
+
+mtext(side = 3, text = expression(CO[2]~concentration~at~4*degree*C~above~prindustrial), line = -1, adj = 0.1, cex = 1.5)
+
 ```
 
 
 ## Load CMIP6 models actual CO2 at 1.5 and 2 degrees at SSPs
 
-This section plots the CO2 measured at warming levels 1.5 and 2 degrees in CMIP6 models against the CO2 levels you would expect from projecting their measured TCR through the transfer function.  
+This section plots the CO2 measured at warming levels 1.5, 2, 3 & 4 degrees in CMIP6 models against the CO2 levels you would expect from projecting their measured TCR through the transfer function.
 
 Measured CO2 levels are consistently below what you would expect from their TCR.
+
 
 ```{r}
 passyears.list <- c('ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp434',
@@ -621,15 +671,19 @@ test <- modelIntersect(cmip6 = cmip6_co2_conc_tcr_proj_2, passyears_ssp = passye
 co2_conc_comp_ssp585_15deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_proj_15, passyears_ssp = passyears_ssp585, gwl = 'conc_1.5' )
 co2_conc_comp_ssp585_2deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_proj_2, passyears_ssp = passyears_ssp585, gwl = 'conc_2' )
 
+co2_conc_comp_ssp585_3deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_proj_3, passyears_ssp = passyears_ssp585, gwl = 'conc_3' )
+co2_conc_comp_ssp585_4deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_proj_4, passyears_ssp = passyears_ssp585, gwl = 'conc_4' )
+
 
 ```
 
+SSP585
 
 ```{r, fig.width = 7, fig.height = 7}
 
 par(las = 1)
 plot(co2_conc_comp_ssp585_2deg$co2_cmip6_proj,co2_conc_comp_ssp585_2deg$co2_ssp, pch = 19,
-     xlim = c(350, 800), ylim = c(350, 800),
+     xlim = c(350, 1600), ylim = c(350, 1600),
            xlab = 'TCR projected CO2 concentration',
      ylab = 'CMIP6 measured CO2 concentration',
      main = 'SSP585')
@@ -646,7 +700,78 @@ text(co2_conc_comp_ssp585_15deg$co2_cmip6_proj,
      col = 'skyblue2',
      cex = 0.6, pos = 3)
 
-legend('topleft', legend = c('1.5 degrees', '2 degrees'), col = c('skyblue2', 'black') , pch = c(19,19), title = 'warming level')
+points(co2_conc_comp_ssp585_3deg$co2_cmip6_proj, co2_conc_comp_ssp585_3deg$co2_ssp,pch = 19, col = 'darkorchid')
+text(co2_conc_comp_ssp585_3deg$co2_cmip6_proj, 
+     co2_conc_comp_ssp585_3deg$co2_ssp,
+     labels = names(co2_conc_comp_ssp585_3deg$co2_ssp),
+     col = 'darkorchid',
+     cex = 0.6, pos = 3)
+
+points(co2_conc_comp_ssp585_4deg$co2_cmip6_proj, co2_conc_comp_ssp585_4deg$co2_ssp,pch = 19, col = 'darkturquoise')
+text(co2_conc_comp_ssp585_4deg$co2_cmip6_proj, 
+     co2_conc_comp_ssp585_4deg$co2_ssp,
+     labels = names(co2_conc_comp_ssp585_4deg$co2_ssp),
+     col = 'darkturquoise',
+     cex = 0.6, pos = 3)
+
+
+legend('topleft', legend = c('1.5 degrees', '2 degrees', '3 degrees', '4 degrees'), col = c('skyblue2', 'black', 'darkorchid', 'darkturquoise') , pch = c(19,19), title = 'warming level')
+
+abline(0,1)
+
+
+
+```
+SSP370
+
+```{r}
+
+
+co2_conc_comp_ssp370_15deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_proj_15, passyears_ssp = passyears_ssp370, gwl = 'conc_1.5' )
+co2_conc_comp_ssp370_2deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_proj_2, passyears_ssp = passyears_ssp370, gwl = 'conc_2' )
+
+co2_conc_comp_ssp370_3deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_proj_3, passyears_ssp = passyears_ssp370, gwl = 'conc_3' )
+co2_conc_comp_ssp370_4deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_proj_4, passyears_ssp = passyears_ssp370, gwl = 'conc_4' )
+
+
+```
+
+```{r, fig.width = 7, fig.height = 7}
+
+par(las = 1)
+plot(co2_conc_comp_ssp370_2deg$co2_cmip6_proj,co2_conc_comp_ssp370_2deg$co2_ssp,  pch = 19,
+     xlim = c(350, 1400), ylim = c(350, 1400),
+    xlab = 'TCR projected CO2 concentration',
+     ylab = 'CMIP6 measured CO2 concentration',
+     main = 'SSP370')
+
+text(co2_conc_comp_ssp370_2deg$co2_cmip6_proj, 
+     co2_conc_comp_ssp370_2deg$co2_ssp,
+     labels = names(co2_conc_comp_ssp370_2deg$co2_ssp),
+     cex = 0.6, pos = 3)
+
+points(co2_conc_comp_ssp370_15deg$co2_cmip6_proj, co2_conc_comp_ssp370_15deg$co2_ssp, pch = 19, col = 'skyblue2')
+text(co2_conc_comp_ssp370_15deg$co2_cmip6_proj, 
+     co2_conc_comp_ssp370_15deg$co2_ssp,
+     labels = names(co2_conc_comp_ssp370_2deg$co2_ssp),
+     col = 'skyblue2',
+     cex = 0.6, pos = 3)
+
+points(co2_conc_comp_ssp370_3deg$co2_cmip6_proj, co2_conc_comp_ssp370_3deg$co2_ssp, pch = 19, col = 'darkorchid')
+text(co2_conc_comp_ssp370_3deg$co2_cmip6_proj, 
+     co2_conc_comp_ssp370_3deg$co2_ssp,
+     labels = names(co2_conc_comp_ssp370_3deg$co2_ssp),
+     col = 'darkorchid',
+     cex = 0.6, pos = 3)
+
+points(co2_conc_comp_ssp370_4deg$co2_cmip6_proj, co2_conc_comp_ssp370_4deg$co2_ssp, pch = 19, col = 'darkturquoise')
+text(co2_conc_comp_ssp370_4deg$co2_cmip6_proj, 
+     co2_conc_comp_ssp370_4deg$co2_ssp,
+     labels = names(co2_conc_comp_ssp370_4deg$co2_ssp),
+     col = 'darkturquoise',
+     cex = 0.6, pos = 3)
+
+legend('topleft', legend = c('1.5 degrees', '2 degrees', '3 degrees', '4 degrees'), col = c('skyblue2', 'black', 'darkorchid', 'darkturquoise') , pch = c(19,19,19,19), title = 'warming level')
 
 abline(0,1)
 
@@ -654,11 +779,17 @@ abline(0,1)
 
 ```
 
+
+
+SSP245
 ```{r}
 
 
 co2_conc_comp_ssp245_15deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_proj_15, passyears_ssp = passyears_ssp245, gwl = 'conc_1.5' )
 co2_conc_comp_ssp245_2deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_proj_2, passyears_ssp = passyears_ssp245, gwl = 'conc_2' )
+
+co2_conc_comp_ssp245_3deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_proj_3, passyears_ssp = passyears_ssp245, gwl = 'conc_3' )
+co2_conc_comp_ssp245_4deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_proj_4, passyears_ssp = passyears_ssp245, gwl = 'conc_4' )
 
 
 ```
@@ -667,7 +798,7 @@ co2_conc_comp_ssp245_2deg <- modelIntersect(cmip6_tcr_proj = cmip6_co2_conc_tcr_
 
 par(las = 1)
 plot(co2_conc_comp_ssp245_2deg$co2_cmip6_proj,co2_conc_comp_ssp245_2deg$co2_ssp,  pch = 19,
-     xlim = c(350, 800), ylim = c(350, 800),
+     xlim = c(350, 900), ylim = c(350, 900),
     xlab = 'TCR projected CO2 concentration',
      ylab = 'CMIP6 measured CO2 concentration',
      main = 'SSP245')
@@ -684,7 +815,21 @@ text(co2_conc_comp_ssp245_15deg$co2_cmip6_proj,
      col = 'skyblue2',
      cex = 0.6, pos = 3)
 
-legend('topleft', legend = c('1.5 degrees', '2 degrees'), col = c('skyblue2', 'black') , pch = c(19,19), title = 'warming level')
+points(co2_conc_comp_ssp245_3deg$co2_cmip6_proj, co2_conc_comp_ssp245_3deg$co2_ssp, pch = 19, col = 'darkorchid')
+text(co2_conc_comp_ssp245_3deg$co2_cmip6_proj, 
+     co2_conc_comp_ssp245_3deg$co2_ssp,
+     labels = names(co2_conc_comp_ssp245_3deg$co2_ssp),
+     col = 'darkorchid',
+     cex = 0.6, pos = 3)
+
+points(co2_conc_comp_ssp245_4deg$co2_cmip6_proj, co2_conc_comp_ssp245_4deg$co2_ssp, pch = 19, col = 'darkturquoise')
+text(co2_conc_comp_ssp245_4deg$co2_cmip6_proj, 
+     co2_conc_comp_ssp245_4deg$co2_ssp,
+     labels = names(co2_conc_comp_ssp245_4deg$co2_ssp),
+     col = 'darkturquoise',
+     cex = 0.6, pos = 3)
+
+legend('topleft', legend = c('1.5 degrees', '2 degrees', '3 degrees', '4 degrees'), col = c('skyblue2', 'black', 'darkorchid', 'darkturquoise') , pch = c(19,19,19,19), title = 'warming level')
 
 abline(0,1)
 
